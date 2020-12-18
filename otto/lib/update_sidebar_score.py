@@ -31,33 +31,30 @@ standings_table_header = """
 
 preseason_regex = re.compile(
     r"""(
-#PRESEASON OPPONENTS
-
-DATE\|OPPONENT\|TIME\|
+#PRESEASON OPPONENTS\s*
+DATE\|OPPONENT\|TIME\|\s*
 \|:---:\|:--:\|:---:\|
-).*?(
+)(.|\s)*?(
 -{3,})""",
     re.DOTALL | re.IGNORECASE,
 )
 
 regular_regex = re.compile(
     r"""(
-#\d\d\d\d OPPONENTS
-
-DATE\|\|OPPONENT\|TIME\|
+#\d\d\d\d OPPONENTS\s*
+DATE\|\|OPPONENT\|TIME\|\s*
 \|:---:\|:--:\|:--\|:---:\|
-).*?(
+)(.|\s)*?(
 -{3,})""",
     re.DOTALL | re.IGNORECASE,
 )
 
 standings_regex = re.compile(
     r"""(
-#AFCN Standings
-
-\|\|\*\*W-L\*\*\|\*\*Home\*\*\|\*\*Away\*\*\|\*\*Div\*\*\|\*\*Streak\*\*\|
+#AFCN Standings\s*
+\|\|\*\*W-L\*\*\|\*\*Home\*\*\|\*\*Away\*\*\|\*\*Div\*\*\|\*\*Streak\*\*\|\s*
 \|:---:\|:--:\|:--:\|:--:\|:--:\|:--:\|
-).*?(
+)(.|\s)*?(
 -{3,})""",
     re.DOTALL | re.IGNORECASE,
 )
@@ -148,11 +145,11 @@ def update_sidebar_score(
     settings = sr_browns.mod.settings()
 
     desc = settings["description"]
-    new_desc = re.sub(standings_regex, r"\1" + standings + r"\2", desc, 1)
+    new_desc = re.sub(standings_regex, r"\1" + standings + r"\3", desc, 1)
     new_desc = re.sub(
-        preseason_regex, r"\1" + seasons["preseason"] + r"\2", new_desc, 1
+        preseason_regex, r"\1" + seasons["preseason"] + r"\3", new_desc, 1
     )
-    new_desc = re.sub(regular_regex, r"\1" + seasons["regular"] + r"\2", new_desc, 1)
+    new_desc = re.sub(regular_regex, r"\1" + seasons["regular"] + r"\3", new_desc, 1)
 
     if desc != new_desc:
         sr_browns.mod.update(description=new_desc)
