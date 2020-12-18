@@ -1,12 +1,12 @@
 FROM python:3 as otto
 MAINTAINER m@rkis.cc
-WORKDIR /otto
+WORKDIR /app
 EXPOSE 8001
-ADD ./requirements.txt /otto/requirements.txt
-ADD ./setup.py /otto/setup.py
+ADD ./requirements.txt /app/requirements.txt
+ADD ./setup.py /app/setup.py
 RUN pip install -r requirements.txt
 RUN pip install .
 RUN apt-get install libmagickwand-dev
-ADD . /otto
+ADD . /app
 ENTRYPOINT [ "python3" ]
 CMD [ "-m", "otto.app" ]
