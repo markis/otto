@@ -129,7 +129,7 @@ ABBR_TO_POSITION = {
     "BAL": -30,
     "CLE": -105,
     "MIA": -240,
-    "NYJ": -315,
+    "NYJ": -345,
     "BUF": -45,
     "NE": -270,
     "DAL": -120,
