@@ -1,18 +1,14 @@
 from datetime import datetime
 from datetime import timedelta
-from threading import Thread
 from typing import Callable
-from typing import List
 
 import praw
 
 from otto import get_reddit
 from otto import SUBREDDIT_NAME
 from otto import TEAM_NAME
-from otto.config import Config
 from otto.lib.nfl_client import NFLClient
 from otto.lib.weather_client import WeatherClient
-from otto.models.game import Game
 from otto.models.game import get_next_game
 from otto.models.team import get_location
 from otto.models.team import get_subreddit

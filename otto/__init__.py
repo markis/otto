@@ -2,7 +2,6 @@ import logging
 import os
 import sys
 
-from flask import Flask
 from praw import Reddit
 
 TEAM_NAME = os.environ.get("TEAM_NAME", "CLE")
@@ -11,6 +10,7 @@ REDDIT_CLIENT_ID = os.environ.get("REDDIT_CLIENT_ID")
 REDDIT_CLIENT_SECRET = os.environ.get("REDDIT_CLIENT_SECRET")
 REDDIT_USERNAME = os.environ.get("REDDIT_USERNAME")
 REDDIT_PASSWORD = os.environ.get("REDDIT_PASSWORD")
+DISCORD_TOKEN = os.environ.get("DISCORD_TOKEN")
 
 MODULE_DIRECTORY = os.path.dirname(__file__)
 ASSETS_DIRECTORY = os.path.normpath(MODULE_DIRECTORY + "/../assets")
