@@ -47,7 +47,7 @@ async def on_message(message: Message):
     process_list.append(msg_id)
 
     def _send_message(response: str) -> None:
-        message.channel.send(response)
+        yield from message.channel.send(response)
 
     Thread(
         target=execute_command,
