@@ -1,4 +1,6 @@
+import asyncio
 import logging
+import nest_asyncio
 import sys
 
 from collections import deque
@@ -28,6 +30,30 @@ def _parse_request(message: Message) -> Tuple[str, str, str, str]:
     return msg_id, msg_text, channel_url, username
 
 
+def asyncio_run(future, as_task=True):
+    """
+    A better implementation of `asyncio.run`.
+
+    :param future: A future or task or call of an async method.
+    :param as_task: Forces the future to be scheduled as task (needed for e.g. aiohttp).
+    """
+
+    try:
+        loop = asyncio.get_running_loop()
+    except RuntimeError:  # no event loop running:
+        loop = asyncio.new_event_loop()
+        return loop.run_until_complete(_to_task(future, as_task, loop))
+    else:
+        nest_asyncio.apply(loop)
+        return asyncio.run_coroutine_threadsafe(future, loop)
+
+
+def _to_task(future, as_task, loop):
+    if not as_task or isinstance(future, asyncio.Task):
+        return future
+    return loop.create_task(future)
+
+
 @client.event
 async def on_message(message: Message):
     logger.info("handling discord message")
@@ -47,17 +73,14 @@ async def on_message(message: Message):
     process_list.append(msg_id)
 
     def _send_message(response: str) -> None:
-        yield from message.channel.send(response)
+        asyncio_run(message.channel.send(response))
 
-    Thread(
-        target=execute_command,
-        kwargs={
-            "cmd_str": "otto " + msg_text,
-            "sr_name": sr_name,
-            "send_message": _send_message,
-            "username": username,
-        },
-    ).start()
+    execute_command(
+        cmd_str=f"otto {msg_text}",
+        sr_name=sr_name,
+        send_message=_send_message,
+        username=username,
+    )
 
 
 if __name__ == "__main__":
