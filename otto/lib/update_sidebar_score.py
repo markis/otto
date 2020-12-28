@@ -1,17 +1,11 @@
-import inspect
 import re
 
 from typing import Any
 from typing import List
 
 import praw
-import tinycss2
 
-from otto import get_reddit
-from otto import SUBREDDIT_NAME
 from otto.config import Config
-from otto.errors import SidebarBackgroundImageError
-from otto.lib.nfl_client import NFLClient
 from otto.models.game import Game
 from otto.models.record import Record
 from otto.models.team import get_name
@@ -52,7 +46,7 @@ DATE\|\|OPPONENT\|TIME\|\s*
 standings_regex = re.compile(
     r"""(
 #AFCN Standings\s*
-\|\|\*\*W-L\*\*\|\*\*Home\*\*\|\*\*Away\*\*\|\*\*Div\*\*\|\*\*Streak\*\*\|\s*
+\|\|W-L\|Home\|Away\|Div\|Streak\|\s*
 \|:---:\|:--:\|:--:\|:--:\|:--:\|:--:\|
 )(.|\s)*?(
 -{3,})""",
@@ -96,7 +90,7 @@ def _get_seasons(games: List[Game]) -> Any:
         last_game_date = game.game_time
 
         if time_since_last_game and time_since_last_game.days > 11:
-            regular.append(f"|BYE|||")
+            regular.append("|BYE|||")
 
         if game.season_type == "PRE":
             preseason.append(f"|{date}|{at}|[]({sub}) {abbr}|{outcome}|")
@@ -152,7 +146,10 @@ def update_sidebar_score(
     new_desc = re.sub(regular_regex, r"\1" + seasons["regular"] + r"\3", new_desc, 1)
 
     if desc != new_desc:
-        sr_browns.mod.update(description=new_desc)
+        # Normal method of updating doesn't work, but this work around does
+        # https://www.reddit.com/r/redditdev/comments/hztfgc/praw_subredditmoderationupdate_not_updating/
+        # sr_browns.mod.update(description=new_desc)
+        sr_browns.wiki["config/sidebar"].edit(new_desc)
 
     # Update new reddit
     widgets = sr_browns.widgets
