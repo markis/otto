@@ -12,6 +12,9 @@ steps:
   image: python:3
   commands:
     - make test-drone
+  volumes:
+    - name: pip_cache
+      path: /root/.cache/pip
 
 - name: docker
   image: plugins/docker:latest
@@ -22,5 +25,20 @@ steps:
       from_secret: docker_password
     repo: markis/otto
     tags: latest
+    cache_from: "markis/otto:latest"
+    storage_driver: overlay2
+  volumes:
+    - name: docker
+      path: /var/run/docker.sock
   when:
     branch: master
+    event:
+      - push
+
+volumes:
+  - name: docker
+    host:
+      path: /var/run/docker.sock
+  - name: pip_cache
+    host:
+      path: /tmp/pip_cache/
