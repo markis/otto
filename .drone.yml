@@ -22,5 +22,6 @@ steps:
       from_secret: docker_password
     repo: markis/otto
     tags: latest
+    storage_path: /data
   when:
     branch: master
