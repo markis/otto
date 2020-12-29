@@ -22,6 +22,7 @@ repos:
         args:
         - --strict
         - --ignore-missing-imports
+        - --allow-untyped-decorators
 
 -   repo: https://github.com/asottile/reorder_python_imports
     rev: v1.7.0

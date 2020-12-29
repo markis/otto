@@ -1,15 +1,18 @@
 import asyncio
 import logging
-import nest_asyncio
 import sys
 
 from collections import deque
-from threading import Thread
+from concurrent.futures import Future
+from typing import Any
 from typing import Deque
 from typing import Tuple
 
+import nest_asyncio
+
 from discord import Client
 from discord import Message
+
 from otto import DISCORD_TOKEN
 from otto import SUBREDDIT_NAME
 from otto.handlers import execute_command
@@ -30,7 +33,7 @@ def _parse_request(message: Message) -> Tuple[str, str, str, str]:
     return msg_id, msg_text, channel_url, username
 
 
-def asyncio_run(future, as_task=True):
+def asyncio_run(future: Any, as_task: bool = True) -> Future[Any]:
     """
     A better implementation of `asyncio.run`.
 
@@ -48,14 +51,14 @@ def asyncio_run(future, as_task=True):
         return asyncio.run_coroutine_threadsafe(future, loop)
 
 
-def _to_task(future, as_task, loop):
+def _to_task(future: Any, as_task: bool, loop: Any) -> Any:
     if not as_task or isinstance(future, asyncio.Task):
         return future
     return loop.create_task(future)
 
 
 @client.event
-async def on_message(message: Message):
+async def on_message(message: Message) -> None:
     logger.info("handling discord message")
     sr_name = SUBREDDIT_NAME
     msg_id, msg_text, channel_url, username = _parse_request(message)
