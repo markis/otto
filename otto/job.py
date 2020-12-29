@@ -12,7 +12,6 @@ from otto.config import get_config
 from otto.lib.nfl_client import NFLClient
 from otto.lib.update_downvote import update_downvote
 from otto.lib.update_sidebar_score import update_sidebar_score
-from otto.models.game import Game
 
 
 logger = logging.getLogger(__name__)

@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Any
 from typing import Optional
 
 from requests import get

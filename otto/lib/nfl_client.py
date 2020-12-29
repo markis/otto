@@ -101,8 +101,6 @@ class NFLClient:
         )
         result = ""
         if data["data"]:
-            stat_pieces = stat.split(",")
-
             players = data["data"]
             first_person = data["data"][0]
             top_stat_value = self._get_stat_value(stat, first_person)

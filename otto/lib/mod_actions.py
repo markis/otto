@@ -1,12 +1,10 @@
 import logging
 
 from typing import Callable
-from typing import cast
 from typing import Optional
 
 from praw import Reddit
 from praw.exceptions import APIException
-from praw.models.list.redditor import RedditorList
 
 
 logger = logging.getLogger(__name__)

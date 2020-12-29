@@ -1,6 +1,5 @@
 import os
 
-from typing import Optional
 from typing import Tuple
 
 from otto import ASSETS_DIRECTORY

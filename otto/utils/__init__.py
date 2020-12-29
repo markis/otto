@@ -4,14 +4,9 @@ import urllib.parse
 import urllib.request
 
 from datetime import datetime
-from datetime import timedelta
-from typing import List
-from typing import Optional
 
 import pytz
 import requests
-
-from praw.models import Subreddit
 
 
 TIMEZONE = pytz.timezone("America/New_York")
