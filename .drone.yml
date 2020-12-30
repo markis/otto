@@ -7,6 +7,11 @@ platform:
   os: linux
   arch: arm
 
+volumes:
+- name: cache
+  host:
+    path: /tmp/cache
+
 steps:
 - name: test
   image: python:3
@@ -23,6 +28,10 @@ steps:
     repo: markis/otto
     tags: latest
     storage_driver: overlay
-    storage_path: /data
+    storage_path: /tmp/cache
+  volumes:
+  - name: cache
+    host:
+      path: /tmp/cache
   when:
     branch: master
