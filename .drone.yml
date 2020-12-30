@@ -45,6 +45,19 @@ steps:
     event:
       - push
 
+- name: deploy
+  image: appleboy/drone-ssh
+  settings:
+    host:
+      from_secret: deploy_host
+    username:
+      from_secret: deploy_user
+    password:
+      from_secret: deploy_password
+    script:
+      - echo hello
+      - echo world
+
 volumes:
   - name: docker
     host:
