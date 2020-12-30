@@ -55,7 +55,7 @@ def _get_weather(team_abbr: str, game_time: datetime) -> str:
     try:
         weather = weather_client.get_weather(lat, lon, game_time)
         return f"{weather.temperature}° - {weather.forecast} - Wind {weather.wind_direction} {weather.wind_speed}"
-    except:
+    except BaseException:
         return ""
 
 

@@ -2,8 +2,6 @@ from datetime import timedelta
 from typing import Dict
 
 from praw import Reddit
-from yaml import dump
-from yaml import Dumper
 from yaml import load
 from yaml import Loader
 

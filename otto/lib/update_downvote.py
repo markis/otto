@@ -1,17 +1,9 @@
-import inspect
-import os
-import re
-
 from datetime import datetime
 from typing import List
 
 import praw
-import requests
-import tinycss2
 
 from otto.config import Config
-from otto.errors import SidebarBackgroundImageError
-from otto.lib.nfl_client import NFLClient
 from otto.models.game import Game
 from otto.models.game import get_last_game
 from otto.models.game import get_next_game
@@ -57,9 +49,6 @@ def update_new_downvote(
 
     data = reddit.get(praw.const.API_PATH["structured_styles"].format(subreddit=sr))
 
-    current_downvote_icon_active_age = get_url_age(
-        data["data"]["style"]["postDownvoteIconActive"]
-    )
     current_downvote_icon_inactive_age = get_url_age(
         data["data"]["style"]["postDownvoteIconInactive"]
     )

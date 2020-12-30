@@ -1,13 +1,6 @@
-import time
-
-from datetime import datetime
-from datetime import timedelta
-from json import dumps
 from typing import Dict
 
 from otto.models.team import get_abbr
-from otto.utils import convert_isostring
-from otto.utils import get_now
 
 
 class Record:
