@@ -8,8 +8,18 @@ platform:
   arch: arm
 
 steps:
+- name: lint
+  image: python:3.8
+  commands:
+    - make lint
+  volumes:
+    - name: pc_cache
+      path: /root/.cache/pre-commit
+    - name: pip_cache
+      path: /root/.cache/pip
+
 - name: test
-  image: python:3
+  image: python:3.8
   commands:
     - make test-drone
   volumes:
@@ -39,6 +49,9 @@ volumes:
   - name: docker
     host:
       path: /var/run/docker.sock
+  - name: pc_cache
+    host:
+      path: /data/drone/pc_cache/
   - name: pip_cache
     host:
-      path: /tmp/pip_cache/
+      path: /data/drone/pip_cache/
