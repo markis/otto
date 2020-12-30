@@ -41,9 +41,24 @@ steps:
     - name: docker
       path: /var/run/docker.sock
   when:
-    branch: master
-    event:
-      - push
+    branch: [master]
+    event: [push]
+
+- name: deploy
+  image: appleboy/drone-ssh
+  settings:
+    host:
+      from_secret: deploy_host
+    username:
+      from_secret: deploy_user
+    password:
+      from_secret: deploy_password
+    script:
+      - echo hello
+      - echo world
+  when:
+    branch: [master]
+    event: [push]
 
 volumes:
   - name: docker
