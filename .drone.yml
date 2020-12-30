@@ -9,6 +9,7 @@ platform:
 
 steps:
 - name: lint
+  depends_on: [clone]
   image: python:3.8
   commands:
     - make lint
@@ -19,6 +20,7 @@ steps:
       path: /root/.cache/pip
 
 - name: test
+  depends_on: [clone]
   image: python:3.8
   commands:
     - make test-drone
@@ -27,6 +29,7 @@ steps:
       path: /root/.cache/pip
 
 - name: publish
+  depends_on: [lint, test]
   image: plugins/docker:latest
   settings:
     username:
@@ -45,6 +48,7 @@ steps:
     event: [push]
 
 - name: deploy
+  depends_on: [publish]
   image: appleboy/drone-ssh
   settings:
     host:
