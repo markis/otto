@@ -26,7 +26,7 @@ steps:
     - name: pip_cache
       path: /root/.cache/pip
 
-- name: docker
+- name: publish
   image: plugins/docker:latest
   settings:
     username:
@@ -35,7 +35,7 @@ steps:
       from_secret: docker_password
     repo: markis/otto
     tags: latest
-    cache_from: "markis/otto:latest"
+    cache_from: markis/otto:latest
     storage_driver: overlay2
   volumes:
     - name: docker
