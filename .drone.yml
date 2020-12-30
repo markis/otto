@@ -8,6 +8,14 @@ platform:
   arch: arm
 
 steps:
+- name: lint
+  image: python:3
+  commands:
+    - make test-drone
+  volumes:
+    - name: pip_cache
+      path: /root/.cache/pip
+
 - name: test
   image: python:3
   commands:
