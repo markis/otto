@@ -54,8 +54,10 @@ steps:
     password:
       from_secret: deploy_password
     script:
-      - echo hello
-      - echo world
+      - docker pull markis/otto:latest
+      - docker service rm home_otto_job
+      - docker service rm home_otto_discord
+      - docker stack deploy --compose-file $HOME/docker-compose.yml home --with-registry-auth
   when:
     branch: [master]
     event: [push]
