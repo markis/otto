@@ -24,4 +24,5 @@ async def check_post(post: Submission) -> None:
         partial_ratio = fuzz.partial_ratio(tweet, post_title)
         if partial_ratio < 75:
             post.mod.flair("Rule7")
+            post.report("No Sensationalized Titles")
             logger.info(f"{post.name}, {post.url}")
