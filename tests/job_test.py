@@ -43,7 +43,8 @@ def test_jobs(
 
     reddit = get_reddit()
     reddit.get = MagicMock(return_value=STRUCTURED_STYLES)
-    run_jobs(reddit=reddit, timer=MagicMock(start=MagicMock()))
+    config = MagicMock()
+    run_jobs(config=config, reddit=reddit, timer=MagicMock(start=MagicMock()))
 
     widgets = reddit.subreddit().widgets.sidebar
     widgets[0].mod.update.assert_called_once_with(

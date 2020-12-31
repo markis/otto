@@ -9,6 +9,7 @@ from praw import Reddit
 
 from otto import get_reddit
 from otto import SUBREDDIT_NAME
+from otto.config import Config
 from otto.config import get_config
 from otto.lib.check_posts import check_post
 from otto.lib.nfl_client import NFLClient
@@ -19,18 +20,21 @@ from otto.lib.update_sidebar_score import update_sidebar_score
 logger = logging.getLogger(__name__)
 
 
-def main() -> None:
-    run_jobs()
-    check_submissions()
+def main(reddit: Reddit = get_reddit(), sr_name: str = SUBREDDIT_NAME) -> None:
+    config = get_config(reddit, sr_name)
+
+    run_jobs(config, reddit)
+    check_submissions(config, reddit)
 
 
 def run_jobs(
-    reddit: Reddit = get_reddit(), timer: Type[threading.Timer] = threading.Timer
+    config: Config,
+    reddit: Reddit = get_reddit(),
+    sr_name: str = SUBREDDIT_NAME,
+    timer: Type[threading.Timer] = threading.Timer,
 ) -> None:
     timer(300, run_jobs).start()
     logger.info("Running Jobs: {}".format(datetime.datetime.now()))
-    sr_name = SUBREDDIT_NAME
-    config = get_config(reddit, sr_name)
     client = NFLClient()
     games = client.get_scores()
     records = client.get_standings()
@@ -48,12 +52,12 @@ def run_jobs(
             logger.exception(e)
 
 
-def check_submissions(reddit: Reddit = get_reddit()) -> None:
+def check_submissions(config: Config, reddit: Reddit = get_reddit()) -> None:
     logger.info("Streaming posts: {}".format(datetime.datetime.now()))
 
     sr = reddit.subreddit(SUBREDDIT_NAME)
-    for post in sr.stream.submissions(skip_existing=False):
-        asyncio.run(check_post(post))
+    for post in sr.stream.submissions(skip_existing=True):
+        asyncio.run(check_post(config, post))
 
 
 if __name__ == "__main__":

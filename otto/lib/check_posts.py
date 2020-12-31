@@ -3,6 +3,7 @@ import logging
 from fuzzywuzzy import fuzz
 from praw.models import Submission
 
+from otto.config import Config
 from otto.lib.twitter_client import get_status
 from otto.lib.twitter_client import get_status_id
 from otto.lib.twitter_client import get_tweet_from_status
@@ -11,18 +12,21 @@ from otto.lib.twitter_client import get_tweet_from_status
 logger = logging.getLogger(__name__)
 
 
-async def check_post(post: Submission) -> None:
+async def check_post(config: Config, post: Submission) -> None:
     if post.approved_by:
         return
+
+    post_title = post.title
+    source_title = None
 
     twitter_status_id = get_status_id(post.url)
     if twitter_status_id:
         twitter_status = get_status(twitter_status_id)
-        tweet = get_tweet_from_status(twitter_status)
-        post_title = post.title
+        source_title = get_tweet_from_status(twitter_status)
 
-        partial_ratio = fuzz.partial_ratio(tweet, post_title)
-        if partial_ratio < 75:
+    if source_title and post_title:
+        partial_ratio = fuzz.partial_ratio(source_title, post_title)
+        if partial_ratio < config.rule7_levenshtein_threshold:
             post.mod.flair("Rule7")
             post.report("No Sensationalized Titles")
             logger.info(f"{post.name}, {post.url}")
