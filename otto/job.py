@@ -1,3 +1,4 @@
+import asyncio
 import datetime
 import logging
 import threading
@@ -9,12 +10,18 @@ from praw import Reddit
 from otto import get_reddit
 from otto import SUBREDDIT_NAME
 from otto.config import get_config
+from otto.lib.check_posts import check_post
 from otto.lib.nfl_client import NFLClient
 from otto.lib.update_downvote import update_downvote
 from otto.lib.update_sidebar_score import update_sidebar_score
 
 
 logger = logging.getLogger(__name__)
+
+
+async def main() -> None:
+    run_jobs()
+    check_submissions()
 
 
 def run_jobs(
@@ -41,5 +48,13 @@ def run_jobs(
             logger.exception(e)
 
 
+def check_submissions(reddit: Reddit = get_reddit()) -> None:
+    logger.info("Streaming posts: {}".format(datetime.datetime.now()))
+
+    sr = reddit.subreddit(SUBREDDIT_NAME)
+    for post in sr.stream.submissions(skip_existing=False):
+        asyncio.run(check_post(post))
+
+
 if __name__ == "__main__":
-    run_jobs()
+    asyncio.run(main())
