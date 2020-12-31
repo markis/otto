@@ -19,7 +19,7 @@ class Config(object):
     rule7_levenshtein_threshold: int
 
     @classmethod
-    def from_dict(cls, config: Dict[str, str]) -> Config:
+    def from_dict(cls, config: Dict[str, str]) -> "Config":
         enable_automatic_sidebar_scores = bool(
             config.get("enable_automatic_sidebar_scores")
         )
