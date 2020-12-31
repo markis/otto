@@ -19,7 +19,7 @@ from otto.lib.update_sidebar_score import update_sidebar_score
 logger = logging.getLogger(__name__)
 
 
-async def main() -> None:
+def main() -> None:
     run_jobs()
     check_submissions()
 
@@ -57,4 +57,4 @@ def check_submissions(reddit: Reddit = get_reddit()) -> None:
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
