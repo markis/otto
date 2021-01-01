@@ -33,7 +33,10 @@ def run_jobs(
     sr_name: str = SUBREDDIT_NAME,
     timer: Type[threading.Timer] = threading.Timer,
 ) -> None:
-    timer(300, run_jobs).start()
+    def _run_jobs() -> None:
+        run_jobs(config, reddit, sr_name, timer)
+
+    timer(300, _run_jobs).start()
     logger.info("Running Jobs: {}".format(datetime.datetime.now()))
     client = NFLClient()
     games = client.get_scores()
