@@ -26,7 +26,26 @@ async def check_post(config: Config, post: Submission) -> None:
 
     if source_title and post_title:
         partial_ratio = fuzz.partial_ratio(source_title, post_title)
+        diag_comment = post.reply(
+            _get_diagnostic_comment(config, source_title, post_title, partial_ratio)
+        )
+        diag_comment.mod.remove()
         if partial_ratio < config.rule7_levenshtein_threshold:
             post.mod.flair("Rule7")
             post.report("No Sensationalized Titles")
-            logger.info(f"{post.name}, {post.url}")
+
+
+def _get_diagnostic_comment(
+    config: Config, source_title: str, post_title: str, levenshtein_distance: int
+) -> str:
+    return f"""
+Diagnostics:
+
+Source Title: "{source_title}"
+
+Reddit Title: "{post_title}"
+
+Levenshtein Distance: {levenshtein_distance}/100
+
+Levenshtein Distance Needed: {config.rule7_levenshtein_threshold}/100
+    """
