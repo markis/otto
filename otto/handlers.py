@@ -134,9 +134,9 @@ def compliment(ctx: OttoContext, username: str) -> None:
     """
     username = username if username else ctx.username
     messages = [
-        f"You look nice today, @{username}",
-        f"@{username}, you're awesome!",
-        f"@{username}, you're the Jarvis to my OBJ",
+        f"You look nice today, {username}",
+        f"{username}, you're awesome!",
+        f"{username}, you're the Jarvis to my OBJ",
     ]
     ctx.send_message(random.choice(messages))
 
