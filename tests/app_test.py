@@ -117,18 +117,6 @@ def test_help(requests_post: MagicMock, get_reddit: MagicMock) -> None:
 
 @patch("otto.get_reddit", new_callable=get_mock_reddit)
 @patch("requests.post")
-def test_help_ban(requests_post: MagicMock, get_reddit: MagicMock) -> None:
-    send_message = MagicMock()
-
-    execute_command(cmd_str="otto /help ban", send_message=send_message)
-
-    # /help ban should return an example of the /ban command and all the options
-    send_message.assert_called_once_with(AnyStr(contains="example: /ban"))
-    send_message.assert_called_once_with(AnyStr(contains="Options:"))
-
-
-@patch("otto.get_reddit", new_callable=get_mock_reddit)
-@patch("requests.post")
 def test_ban_user(requests_post: MagicMock, get_reddit: MagicMock) -> None:
     send_message = MagicMock()
     duration = 22
@@ -136,7 +124,7 @@ def test_ban_user(requests_post: MagicMock, get_reddit: MagicMock) -> None:
     rule_short = SR_RULES[rule - 1]["short_name"]
 
     execute_command(
-        cmd_str=f"otto /ban {TEST_USER} -d {duration} -r {rule}",
+        cmd_str=f"otto /ban -u {TEST_USER} -d {duration} -r {rule}",
         send_message=send_message,
     )
 
@@ -155,7 +143,9 @@ def test_compliment(requests_post: MagicMock, get_reddit: MagicMock) -> None:
     execute_command(cmd_str=f"otto /compliment", send_message=send_message)
     send_message.assert_called_with(AnyStr(contains=TEST_MOD))
 
-    execute_command(cmd_str=f"otto /compliment {TEST_USER}", send_message=send_message)
+    execute_command(
+        cmd_str=f"otto /compliment -u {TEST_USER}", send_message=send_message
+    )
     send_message.assert_called_with(AnyStr(contains=TEST_USER))
 
 

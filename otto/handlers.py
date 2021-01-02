@@ -71,7 +71,7 @@ class OttoContext(object):
 
 
 @otto.command(name="/help", options_metavar="", add_help_option=False)
-@click.argument("name", required=False)
+@click.option("--name", help="subcommand to get help information about", required=False)
 @click.pass_context
 def help(click_ctx: click.Context, name: Optional[str] = None) -> None:
     """
@@ -94,7 +94,14 @@ def help(click_ctx: click.Context, name: Optional[str] = None) -> None:
 
 
 @otto.command(name="/sidebar", options_metavar="", add_help_option=False)
-@click.argument("url", metavar="[url]", type=str, required=True)
+@click.option(
+    "-u",
+    "--url",
+    metavar="[url]",
+    help="url of image to set as the sidebar",
+    type=str,
+    required=True,
+)
 @click.pass_obj
 def sidebar(ctx: OttoContext, url: str) -> None:
     """
@@ -110,7 +117,14 @@ def sidebar(ctx: OttoContext, url: str) -> None:
 
 
 @otto.command(name="/compliment", options_metavar="", add_help_option=False)
-@click.argument("username", metavar="[username]", type=str, required=False)
+@click.option(
+    "-u",
+    "--username",
+    metavar="[username]",
+    help="username to compliment",
+    type=str,
+    required=False,
+)
 @click.pass_obj
 def compliment(ctx: OttoContext, username: str) -> None:
     """
@@ -128,7 +142,14 @@ def compliment(ctx: OttoContext, username: str) -> None:
 
 
 @otto.command(name="/ban", options_metavar="", add_help_option=False)
-@click.argument("username", metavar="[username]", type=str)
+@click.option(
+    "-u",
+    "--username",
+    metavar="[username]",
+    help="username to ban",
+    type=str,
+    required=True,
+)
 @click.option(
     "-r",
     "--rule",
