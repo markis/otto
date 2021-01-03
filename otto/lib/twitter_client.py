@@ -10,7 +10,7 @@ from otto import TWITTER_SECRET
 
 
 twitter_status_url_re = re.compile(
-    r"^https?:\/\/twitter\.com\/(?:#!\/)?(\w+)\/status(es)?\/(\d+)"
+    r"^https?:\/\/(mobile.)?twitter\.com\/(?:#!\/)?(\w+)\/status(es)?\/(\d+)"
 )
 truncated_tweet_re = re.compile(r"(.*?)(\…?\s*)https:\/\/t.co\/.*?$")
 
@@ -34,7 +34,7 @@ def get_status_id(url: str) -> Optional[int]:
     if not match:
         return None
 
-    return int(match[3])
+    return int(match[4])
 
 
 def get_tweet_from_status(status: twitter.models.Status) -> str:
