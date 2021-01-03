@@ -76,27 +76,28 @@ def generate_game_thread(
     next_game = get_next_game(games, timedelta())
 
     assert next_game
-    team = TEAM_NAME
+    team_abbr = TEAM_NAME
+    team_name = "Browns"
     next_team = next_game.opponent
     next_abbr = next_team.abbr
-    next_location_abbr = team if next_game.at_home else next_abbr
+    next_location_abbr = team_abbr if next_game.at_home else next_abbr
 
     # game_data = nfl_client.get_game(next_game.id)
     # game_detail_id = game_data["gameDetailId"]
     # details = nfl_client.get_game_details(game_detail_id)
 
-    standings_table = _get_standings_table(nfl_client, team, next_abbr)
+    standings_table = _get_standings_table(nfl_client, team_abbr, next_abbr)
     weather_forecast = _get_weather(next_location_abbr, next_game.game_time)
 
-    team_subreddit = get_subreddit(team)
+    team_subreddit = get_subreddit(team_abbr)
     next_subreddit = get_subreddit(next_abbr)
 
-    team_pass_lead = nfl_client.get_stat_leader("passing.yards", team)
-    team_rush_lead = nfl_client.get_stat_leader("rushing.yards", team)
-    team_rec_lead = nfl_client.get_stat_leader("receiving.yards", team)
-    team_tack_lead = nfl_client.get_stat_leader("defensive.combineTackles", team)
-    team_int_lead = nfl_client.get_stat_leader("defensive.interceptions", team)
-    team_sack_lead = nfl_client.get_stat_leader("defensive.sacks", team)
+    team_pass_lead = nfl_client.get_stat_leader("passing.yards", team_abbr)
+    team_rush_lead = nfl_client.get_stat_leader("rushing.yards", team_abbr)
+    team_rec_lead = nfl_client.get_stat_leader("receiving.yards", team_abbr)
+    team_tack_lead = nfl_client.get_stat_leader("defensive.combineTackles", team_abbr)
+    team_int_lead = nfl_client.get_stat_leader("defensive.interceptions", team_abbr)
+    team_sack_lead = nfl_client.get_stat_leader("defensive.sacks", team_abbr)
 
     next_pass_lead = nfl_client.get_stat_leader("passing.yards", next_abbr)
     next_rush_lead = nfl_client.get_stat_leader("rushing.yards", next_abbr)
@@ -105,31 +106,13 @@ def generate_game_thread(
     next_int_lead = nfl_client.get_stat_leader("defensive.interceptions", next_abbr)
     next_sack_lead = nfl_client.get_stat_leader("defensive.sacks", next_abbr)
 
-    live_title = f"[LIVE GAME THREAD] Browns vs {next_team.name}"
-    title = f"[GAME DAY THREAD] Browns vs {next_team.name}"
-
-    live_thread_id = reddit.post(
-        praw.endpoints.API_PATH["submit"],
-        data={
-            "sr": sr_name,
-            "kind": "self",
-            "resubmit": True,
-            "sendreplies": False,
-            "title": live_title,
-            "text": "",
-            "nsfw": False,
-            "spoiler": False,
-            # This will make the post a chat-post
-            "discussion_type": "CHAT",
-        },
-    )
+    title = f"[GAME DAY THREAD] {team_name} vs {next_team.name}"
 
     game_thread_text = f"""
 |[](/browns2)|
 |:-----:|
 |**BEHAVE YOURSELVES AND REPORT ANYTHING THAT BREAKS THE RULES.**|
 |**FANS OF OTHER TEAMS PLEASE SELECT A FLAIR**|
-|[LIVE GAME THREAD](https://new.reddit.com/r/Browns/comments/{live_thread_id}/)|
 
 ----
 
@@ -146,18 +129,18 @@ def generate_game_thread(
 |**TV Network**| {", ".join(next_game.networks)}
 |**TV Coverage**| [Map](https://506sports.com/nfl.php?yr=2020&wk={next_game.week})|
 |**Commentary**|??|
-|**NFL** |[Game Center](https://www.nfl.com/gamecenter/2020/2020/REG02/bengals@browns)|
+|**NFL** |[Game Center](https://www.nfl.com/games/{next_team.name}-at-{team_name}-2020-reg-{next_game.week})|
 
 ----
 
 |Team|Starting QB|
 |:-----:|:-----:|
-|[](/r/{next_subreddit})|??|
-|[](/r/{team_subreddit})|??|
+|[{next_team.name}]({next_subreddit})|??|
+|[{team_name}]({team_subreddit})|??|
 
 ----
 
-||2020 [](/r/{next_subreddit})  Leaders|2020 [](/r/{team_subreddit}) Leaders|
+||2020 [{next_team.name}]({next_subreddit}) Leaders|2020 [{team_name}]({team_subreddit}) Leaders|
 |:-----:|:-----:|:------:|
 |**Passing**|{next_pass_lead}|{team_pass_lead}|
 |**Rushing**|{next_rush_lead}|{team_rush_lead}|
@@ -167,17 +150,12 @@ def generate_game_thread(
 |**Sacks**|{next_sack_lead}|{team_sack_lead}|
     """
 
-    game_thread_id = sr.submit(title, selftext=game_thread_text)
-
-    live_thread = reddit.submission(live_thread_id)
-    game_thread = reddit.submission(game_thread_id)
-
-    live_thread.mod.remove()
-    game_thread.mod.remove()
-
     message = f"""
-        Game Thread - https://redd.it/{game_thread_id}
-        Live Thread - https://redd.it/{live_thread_id}
+*Body*
+```{game_thread_text}```
+
+*Title*
+```{title}```
     """
     send_message(message)
 
