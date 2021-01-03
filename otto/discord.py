@@ -91,8 +91,11 @@ class DiscordClient(Client):  # type: ignore
         try:
             msg_bytes = self.inflator.decompress(self.msg_buffer)
             msg_str = msg_bytes.decode("utf-8")
-        finally:
             self.msg_buffer = bytearray()
+        except BaseException as ex:
+            logger.error("Error decompressing and decoding buffer", exc_info=ex)
+            self.msg_buffer = bytearray()
+            return
 
         msg = json.loads(msg_str)
         if msg.get("t") == "INTERACTION_CREATE":
