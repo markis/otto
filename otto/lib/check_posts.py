@@ -12,7 +12,7 @@ from otto.lib.twitter_client import get_tweet_from_status
 logger = logging.getLogger(__name__)
 
 
-async def check_post(config: Config, post: Submission) -> None:
+def check_post(config: Config, post: Submission) -> None:
     logger.info(f"Checking post: {post.id}")
     if post.approved_by:
         return
