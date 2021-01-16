@@ -94,8 +94,7 @@ class DiscordClient(Client):  # type: ignore
             self.msg_buffer = bytearray()
         except BaseException as ex:
             logger.error("Error decompressing and decoding buffer", exc_info=ex)
-            self.msg_buffer = bytearray()
-            return
+            sys.exit("Error decompressing and decoding buffer")
 
         msg = json.loads(msg_str)
         if msg.get("t") == "INTERACTION_CREATE":
