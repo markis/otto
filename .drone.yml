@@ -61,6 +61,7 @@ steps:
       - docker pull markis/otto:latest
       - docker service rm home_otto_job
       - docker service rm home_otto_discord
+      - docker service rm home_otto_stream_posts
       - docker stack deploy --compose-file $HOME/docker-compose.yml home --with-registry-auth
   when:
     branch: [master]
