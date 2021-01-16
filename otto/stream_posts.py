@@ -25,7 +25,7 @@ def stream_posts(config: Config, reddit: Reddit = get_reddit()) -> None:
 
     sr = reddit.subreddit(SUBREDDIT_NAME)
     for post in sr.stream.submissions(skip_existing=True):
-        asyncio.create_task(check_post(config, post))
+        check_post(config, post)
 
 
 if __name__ == "__main__":
