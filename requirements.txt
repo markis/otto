@@ -3,7 +3,6 @@ Flask==1.1.1
 fuzzywuzzy[speedup]==0.18.0
 nest_asyncio==1.4.3
 Praw==7.1.0
-pytest==5.2.2
 pytimeparse==1.1.8
 pytz==2018.7
 PyYAML==5.1.2
