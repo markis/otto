@@ -12,6 +12,7 @@ RUN apk add imagemagick
 # docker layer caching invalidation
 ADD ./requirements.txt /app/
 RUN apk add build-base && \
+    pip install --no-cache --upgrade pip setuptools && \
     pip install -r requirements.txt && \
     apk del build-base
 
