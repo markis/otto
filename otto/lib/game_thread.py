@@ -108,6 +108,9 @@ def generate_game_thread(
 
     title = f"[GAME DAY THREAD] {team_name} vs {next_team.name}"
 
+    season = next_game.season
+    season_type = next_game.season_type
+
     game_thread_text = f"""
 |[](/browns2)|
 |:-----:|
@@ -127,9 +130,9 @@ def generate_game_thread(
 |**Weather**|{weather_forecast}|
 |**Radio**| [Local Radio Link - 92.3 THE FAN](https://player.radio.com/listen/station/923-the-fan), ESPN 850
 |**TV Network**| {", ".join(next_game.networks)}
-|**TV Coverage**| [Map](https://506sports.com/nfl.php?yr=2020&wk={next_game.week})|
+|**TV Coverage**| [Map](https://506sports.com/nfl.php?yr={season}&wk={next_game.week})|
 |**Commentary**|??|
-|**NFL** |[Game Center](https://www.nfl.com/games/{next_team.name}-at-{team_name}-2020-reg-{next_game.week})|
+|**NFL** |[Game Center](https://www.nfl.com/games/{next_team.name}-at-{team_name}-{season}-{season_type}-{next_game.week})|
 
 ----
 
@@ -140,7 +143,7 @@ def generate_game_thread(
 
 ----
 
-||2020 [{next_team.name}]({next_subreddit}) Leaders|2020 [{team_name}]({team_subreddit}) Leaders|
+||{season} [{next_team.name}]({next_subreddit}) Leaders|{season} [{team_name}]({team_subreddit}) Leaders|
 |:-----:|:-----:|:------:|
 |**Passing**|{next_pass_lead}|{team_pass_lead}|
 |**Rushing**|{next_rush_lead}|{team_rush_lead}|
