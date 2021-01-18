@@ -5,8 +5,10 @@ CMD [ "-m", "otto.app" ]
 WORKDIR /app
 EXPOSE 8001
 
+ENV MAGICK_HOME=/usr
+
 # Wand dependency for image manipulation
-RUN apk add imagemagick
+RUN apk add imagemagick imagemagick-dev
 
 # Install pip dependencies and avoid
 # docker layer caching invalidation
