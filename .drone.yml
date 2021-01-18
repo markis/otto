@@ -13,7 +13,7 @@ steps:
   image: python:3.8-alpine
   commands:
     - export MAGICK_HOME=/usr
-    - apk add --update build-base git make imagemagick imagemagick-dev
+    - apk add --update git make
     - make lint
   volumes:
     - name: pc_cache
@@ -26,7 +26,7 @@ steps:
   image: python:3-alpine
   commands:
     - export MAGICK_HOME=/usr
-    - apk add --update build-base git make imagemagick imagemagick-dev
+    - apk add --update build-base make imagemagick imagemagick-dev
     - make test-drone
   volumes:
     - name: pip_cache
