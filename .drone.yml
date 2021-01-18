@@ -10,8 +10,10 @@ platform:
 steps:
 - name: lint
   depends_on: [clone]
-  image: python:3.8
+  image: python:3.8-alpine
   commands:
+    - export MAGICK_HOME=/usr
+    - apk add --update build-base git make imagemagick imagemagick-dev
     - make lint
   volumes:
     - name: pc_cache
@@ -21,8 +23,10 @@ steps:
 
 - name: test
   depends_on: [clone]
-  image: python:3.8
+  image: python:3-alpine
   commands:
+    - export MAGICK_HOME=/usr
+    - apk add --update build-base git make imagemagick imagemagick-dev
     - make test-drone
   volumes:
     - name: pip_cache
