@@ -1,199 +1,113 @@
 import asyncio
 import json
 import logging
+from otto.lib.game_thread import generate_game_thread
+from otto.lib.mod_actions import disable_text_posts, enable_text_posts
+from random import random
+from otto.lib.update_sidebar_image import update_sidebar_image
 import sys
-import zlib
+import asyncio
+import discord
+import json
+import logging
 
-from collections import deque
-from pprint import pprint
-from typing import Any
-from typing import Deque
-from typing import Dict
-from typing import List
-from typing import Tuple
-from typing import Union
 
-import nest_asyncio
+from discord.ext import commands
+from discord_slash import SlashCommand
+from discord_slash import SlashContext
+from discord_slash.model import SlashCommandOptionType
+from discord_slash.utils.manage_commands import create_option
 
-from discord import Client
-from discord import Message
 
-from otto import DISCORD_TOKEN
+from otto import DISCORD_TOKEN, get_reddit
 from otto import SUBREDDIT_NAME
-from otto.handlers import execute_command
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 logger = logging.getLogger("otto.discord")
-# Z_SYNC_FLUSH suffix
-ZLIB_SUFFIX = b"\x00\x00\xff\xff"
 
+bot = commands.Bot(command_prefix="/", intents=discord.Intents.default())
+commands = SlashCommand(bot, sync_commands=True)
 
-class DiscordClient(Client):  # type: ignore
-    msg_buffer = bytearray()
-    inflator = zlib.decompressobj()
-    process_list: Deque[str] = deque(maxlen=10)
+reddit = get_reddit()
 
-    def _parse_request(self, message: Message) -> Tuple[str, str, str, str]:
-        if message:
-            msg_id = message.id
-            msg_text = message.content
-            channel_url = message.channel
-            username = message.author.name
+def slash_send(ctx: SlashContext) -> Callable[[str], None]:
+    def send(message: str) -> None:
+        asyncio.run(ctx.send(content=message))
+    return send
 
-        return msg_id, msg_text, channel_url, username
+@commands.slash(
+    name="sidebar",
+    description="""
+    Update sidebar image in old and new reddit
 
-    def _parse_interaction(self, message: Dict[str, Any]) -> Tuple[str, str, str, str]:
-        if message:
-            message_data = message["d"]
-            if message_data:
-                msg_id = message_data["id"]
-                channel_id = message_data["channel_id"]
-                username = message_data["member"]["user"]["username"]
-
-                data = message_data["data"]
-                msg_text = f"/{data['name']}"
-                for option in data.get("options", []):
-                    msg_text += f" --{option['name']}=\"{option['value']}\""
-
-        return msg_id, msg_text, channel_id, username
-
-    def asyncio_run(self, future: Any, as_task: bool = True) -> Any:
-        """
-        A better implementation of `asyncio.run`.
-
-        :param future: A future or task or call of an async method.
-        :param as_task: Forces the future to be scheduled as task (needed for e.g. aiohttp).
-        """
-
-        try:
-            loop = asyncio.get_running_loop()
-        except RuntimeError:  # no event loop running:
-            loop = asyncio.new_event_loop()
-            return loop.run_until_complete(self._to_task(future, as_task, loop))
-        else:
-            nest_asyncio.apply(loop)
-            return asyncio.run_coroutine_threadsafe(future, loop)
-
-    def _to_task(self, future: Any, as_task: bool, loop: Any) -> Any:
-        if not as_task or isinstance(future, asyncio.Task):
-            return future
-        return loop.create_task(future)
-
-    async def on_socket_raw_receive(self, msg_bytes: bytes) -> None:
-        logger.info("on_socket_raw_receive")
-
-        if type(msg_bytes) is bytes:
-            self.msg_buffer.extend(msg_bytes)
-
-        if len(msg_bytes) < 4 or msg_bytes[-4:] != ZLIB_SUFFIX:
-            return
-
-        try:
-            msg_bytes = self.inflator.decompress(self.msg_buffer)
-            msg_str = msg_bytes.decode("utf-8")
-            self.msg_buffer = bytearray()
-        except BaseException as ex:
-            logger.error("Error decompressing and decoding buffer", exc_info=ex)
-            sys.exit("Error decompressing and decoding buffer")
-
-        msg = json.loads(msg_str)
-        if msg.get("t") == "INTERACTION_CREATE":
-            msg_id, msg_text, channel_id, username = self._parse_interaction(msg)
-
-            channel = client.get_channel(channel_id)
-            if not channel:
-                channel = await client.fetch_channel(channel_id)
-
-            def _send_message(response: str) -> None:
-                self.asyncio_run(channel.send(response))
-
-            execute_command(
-                cmd_str=f"otto {msg_text}",
-                sr_name=SUBREDDIT_NAME,
-                send_message=_send_message,
-                username=username,
-            )
-
-    async def on_message(self, message: Message) -> None:
-        logger.info("on_message")
-        sr_name = SUBREDDIT_NAME
-        msg_id, msg_text, channel_url, username = self._parse_request(message)
-        logger.debug(f"{msg_id}, {msg_text}")
-
-        if message.author == client.user:
-            return
-
-        if msg_id in self.process_list:
-            return
-
-        if not msg_text or not msg_text.startswith("/"):
-            return
-
-        self.process_list.append(msg_id)
-
-        def _send_message(response: str) -> None:
-            self.asyncio_run(message.channel.send(response))
-
-        execute_command(
-            cmd_str=f"otto {msg_text}",
-            sr_name=sr_name,
-            send_message=_send_message,
-            username=username,
+    Will attempt to resize the image down to 600x800 while maintaining aspect ratio.
+    If it's smaller then it will attempt to resize down to 300x400.
+    """,
+    options=[
+        create_option(
+            name="url",
+            description="url of image to set as the sidebar",
+            option_type=SlashCommandOptionType.STRING,
+            required=True,
         )
-
-
-def update_slash_commands() -> None:
-    import click
-    import requests
-    from otto.handlers import otto
-
-    app_id = 792417327437316126
-    server_id = 783727217179623435
-
-    url = (
-        f"https://discord.com/api/v8/applications/{app_id}/guilds/{server_id}/commands"
+    ]
+)
+def sidebar(ctx: SlashContext, url: str) -> None:
+    update_sidebar_image(
+        reddit=get_reddit(), image_url=url, send_message=slash_send(ctx)
     )
 
-    def _generate_command(command: click.Command) -> Dict[str, Any]:
-        name = (command.name or "")[1:]
-        help = (command.help or name or "")[:100]
-        return {
-            "name": name,
-            "description": help,
-            "options": _generate_options(command),
-        }
 
-    def _generate_options(command: click.Command) -> List[Dict[str, Any]]:
-        return [
-            {
-                "name": param.name,
-                "description": getattr(param, "help", param.name)[:100],
-                "type": _get_type(param),
-                "required": param.required,
-            }
-            for param in command.params
-        ]
+@commands.slash(
+    name="compliment",
+    description="Feeling down? This might be the pick-me-up you need!",
+    options=[
+        create_option(
+            name="name",
+            description="Optional name of user to compliment",
+            option_type=SlashCommandOptionType.USER,
+            required=False,
+        )
+    ],
+)
+def compliment(ctx: SlashContext, username: str = None) -> None:
+    """
+    Feeling down? This might be the pick-me-up you need! :D
 
-    def _get_type(param: Union[click.Argument, click.Parameter]) -> int:
-        if param.type == click.INT:
-            return 4
-        elif isinstance(param.type, click.IntRange):
-            return 4
+    Username is optional, will assume current user if not specified
+    """
+    username = username if username else getattr(ctx.author, "name", "")
+    messages = [
+        f"You look nice today, {username}",
+        f"{username}, you're awesome!",
+        f"{username}, you're the Jarvis to my OBJ",
+    ]
+    slash_send(ctx)(random.choice(messages))
 
-        return 3
 
-    # For authorization, you can use either your bot token
-    headers = {"Authorization": f"Bot {DISCORD_TOKEN}"}
+@commands.slash(
+    name="enable_text_posts",
+    description="Enable text posts, allowing self posts and link posts",
+)
+def enable_text_posts_handler(ctx: SlashContext) -> None:
+    enable_text_posts(get_reddit(), SUBREDDIT_NAME, slash_send(ctx))
 
-    for cmd in otto.commands:
-        json = _generate_command(otto.commands[cmd])
-        r = requests.post(url, headers=headers, json=json)
-        if r.status_code != 200:
-            pprint(json)
-            print(r.json())
+@commands.slash(
+    name="disable_text_posts",
+    description="Disable text posts, by only allowing link posts",
+)
+def disable_text_posts_handler(ctx: SlashContext) -> None:
+    """Disable text posts by only allowing link posts"""
+    disable_text_posts(get_reddit(), SUBREDDIT_NAME, slash_send(ctx))
+
+@commands.slash(
+    name="generate_game_thread",
+    description="Generate game day threads",
+)
+def game_day_thread(ctx: SlashContext) -> None:
+    generate_game_thread(get_reddit(), SUBREDDIT_NAME, slash_send(ctx))
+
 
 
 if __name__ == "__main__":
-    update_slash_commands()
-    client = DiscordClient()
-    client.run(DISCORD_TOKEN)
+    bot.run(DISCORD_TOKEN)
