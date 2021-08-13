@@ -12,13 +12,13 @@ from discord_slash.utils.manage_commands import remove_all_commands
 from random import random
 from typing import Callable
 
-
-from otto import DISCORD_TOKEN, get_reddit
+from otto import DISCORD_BOT_ID, DISCORD_TOKEN, get_reddit
 from otto import SUBREDDIT_NAME
 from otto.lib.game_thread import generate_game_thread
 from otto.lib.mod_actions import disable_text_posts
 from otto.lib.mod_actions import enable_text_posts
 from otto.lib.update_sidebar_image import update_sidebar_image
+
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 logger = logging.getLogger("otto.discord")
@@ -112,7 +112,7 @@ def game_day_thread(ctx: SlashContext) -> None:
 
 
 if __name__ == "__main__":
-    log.info("Removing all commands")
+    logger.info("Removing all commands")
     asyncio.run(remove_all_commands(DISCORD_BOT_ID, DISCORD_TOKEN))
 
     bot.run(DISCORD_TOKEN)
