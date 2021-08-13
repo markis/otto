@@ -1,7 +1,11 @@
-import sys
 import asyncio
-import discord
 import logging
+import sys
+
+from random import random
+from typing import Callable
+
+import discord
 
 from discord.ext import commands
 from discord_slash import SlashCommand
@@ -9,10 +13,10 @@ from discord_slash import SlashContext
 from discord_slash.model import SlashCommandOptionType
 from discord_slash.utils.manage_commands import create_option
 from discord_slash.utils.manage_commands import remove_all_commands
-from random import random
-from typing import Callable
 
-from otto import DISCORD_BOT_ID, DISCORD_TOKEN, get_reddit
+from otto import DISCORD_BOT_ID
+from otto import DISCORD_TOKEN
+from otto import get_reddit
 from otto import SUBREDDIT_NAME
 from otto.lib.game_thread import generate_game_thread
 from otto.lib.mod_actions import disable_text_posts
@@ -38,12 +42,7 @@ def slash_send(ctx: SlashContext) -> Callable[[str], None]:
 
 @commands.slash(
     name="sidebar",
-    description="""
-    Update sidebar image in old and new reddit
-
-    Will attempt to resize the image down to 600x800 while maintaining aspect ratio.
-    If it's smaller then it will attempt to resize down to 300x400.
-    """,
+    description="Update sidebar image in old and new reddit",
     options=[
         create_option(
             name="url",
@@ -103,10 +102,7 @@ def disable_text_posts_handler(ctx: SlashContext) -> None:
     disable_text_posts(get_reddit(), SUBREDDIT_NAME, slash_send(ctx))
 
 
-@commands.slash(
-    name="generate_game_thread",
-    description="Generate game day threads",
-)
+@commands.slash(name="generate_game_thread", description="Generate game day threads")
 def game_day_thread(ctx: SlashContext) -> None:
     generate_game_thread(get_reddit(), SUBREDDIT_NAME, slash_send(ctx))
 
@@ -115,4 +111,5 @@ if __name__ == "__main__":
     logger.info("Removing all commands")
     asyncio.run(remove_all_commands(DISCORD_BOT_ID, DISCORD_TOKEN))
 
+    logger.info("Starting the bot")
     bot.run(DISCORD_TOKEN)
