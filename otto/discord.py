@@ -16,7 +16,7 @@ from discord.ext import commands
 from discord_slash import SlashCommand
 from discord_slash import SlashContext
 from discord_slash.model import SlashCommandOptionType
-from discord_slash.utils.manage_commands import create_option
+from discord_slash.utils.manage_commands import create_option, remove_all_commands
 
 
 from otto import DISCORD_TOKEN, get_reddit
@@ -110,4 +110,7 @@ def game_day_thread(ctx: SlashContext) -> None:
 
 
 if __name__ == "__main__":
+    log.info("Removing all commands")
+    asyncio.run(remove_all_commands(DISCORD_BOT_ID, DISCORD_TOKEN))
+
     bot.run(DISCORD_TOKEN)
