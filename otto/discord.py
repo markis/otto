@@ -1,6 +1,6 @@
 import asyncio
-import json
 import logging
+from typing import Callable
 from otto.lib.game_thread import generate_game_thread
 from otto.lib.mod_actions import disable_text_posts, enable_text_posts
 from random import random
@@ -8,7 +8,6 @@ from otto.lib.update_sidebar_image import update_sidebar_image
 import sys
 import asyncio
 import discord
-import json
 import logging
 
 
