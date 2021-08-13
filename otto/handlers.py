@@ -234,7 +234,7 @@ def game_day_thread(ctx: OttoContext) -> None:
 @otto.command(name="/gdt", options_metavar="", add_help_option=False)
 @click.pass_obj
 def gdt(ctx: OttoContext) -> None:
-    """Short cut for '/game_day_thread' """
+    """Short cut for '/game_day_thread'"""
     generate_game_thread(ctx.reddit, ctx.sr_name, ctx.send_message)
 
 

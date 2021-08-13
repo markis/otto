@@ -60,7 +60,7 @@ def _get_weather(team_abbr: str, game_time: datetime) -> str:
 
 
 def _default_send_message(msg: str) -> None:
-    """ Default send_message will just print to console """
+    """Default send_message will just print to console"""
     print(msg)
 
 

@@ -1,25 +1,24 @@
-import asyncio
-import logging
-from typing import Callable
-from otto.lib.game_thread import generate_game_thread
-from otto.lib.mod_actions import disable_text_posts, enable_text_posts
-from random import random
-from otto.lib.update_sidebar_image import update_sidebar_image
 import sys
 import asyncio
 import discord
 import logging
 
-
 from discord.ext import commands
 from discord_slash import SlashCommand
 from discord_slash import SlashContext
 from discord_slash.model import SlashCommandOptionType
-from discord_slash.utils.manage_commands import create_option, remove_all_commands
+from discord_slash.utils.manage_commands import create_option
+from discord_slash.utils.manage_commands import remove_all_commands
+from random import random
+from typing import Callable
 
 
 from otto import DISCORD_TOKEN, get_reddit
 from otto import SUBREDDIT_NAME
+from otto.lib.game_thread import generate_game_thread
+from otto.lib.mod_actions import disable_text_posts
+from otto.lib.mod_actions import enable_text_posts
+from otto.lib.update_sidebar_image import update_sidebar_image
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 logger = logging.getLogger("otto.discord")
@@ -29,10 +28,13 @@ commands = SlashCommand(bot, sync_commands=True)
 
 reddit = get_reddit()
 
+
 def slash_send(ctx: SlashContext) -> Callable[[str], None]:
     def send(message: str) -> None:
         asyncio.run(ctx.send(content=message))
+
     return send
+
 
 @commands.slash(
     name="sidebar",
@@ -49,7 +51,7 @@ def slash_send(ctx: SlashContext) -> Callable[[str], None]:
             option_type=SlashCommandOptionType.STRING,
             required=True,
         )
-    ]
+    ],
 )
 def sidebar(ctx: SlashContext, url: str) -> None:
     update_sidebar_image(
@@ -91,6 +93,7 @@ def compliment(ctx: SlashContext, username: str = None) -> None:
 def enable_text_posts_handler(ctx: SlashContext) -> None:
     enable_text_posts(get_reddit(), SUBREDDIT_NAME, slash_send(ctx))
 
+
 @commands.slash(
     name="disable_text_posts",
     description="Disable text posts, by only allowing link posts",
@@ -99,13 +102,13 @@ def disable_text_posts_handler(ctx: SlashContext) -> None:
     """Disable text posts by only allowing link posts"""
     disable_text_posts(get_reddit(), SUBREDDIT_NAME, slash_send(ctx))
 
+
 @commands.slash(
     name="generate_game_thread",
     description="Generate game day threads",
 )
 def game_day_thread(ctx: SlashContext) -> None:
     generate_game_thread(get_reddit(), SUBREDDIT_NAME, slash_send(ctx))
-
 
 
 if __name__ == "__main__":
