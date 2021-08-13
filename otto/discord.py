@@ -2,7 +2,7 @@ import asyncio
 import logging
 import sys
 
-from random import random
+from random import choice
 from typing import Callable
 
 import discord
@@ -70,19 +70,20 @@ def sidebar(ctx: SlashContext, url: str) -> None:
         )
     ],
 )
-def compliment(ctx: SlashContext, username: str = None) -> None:
+def compliment(ctx: SlashContext, *args, **kwargs) -> None:
     """
     Feeling down? This might be the pick-me-up you need! :D
 
     Username is optional, will assume current user if not specified
     """
+    username = kwargs.get("name")
     username = username if username else getattr(ctx.author, "name", "")
     messages = [
         f"You look nice today, {username}",
         f"{username}, you're awesome!",
         f"{username}, you're the Jarvis to my OBJ",
     ]
-    slash_send(ctx)(random.choice(messages))
+    slash_send(ctx)(choice(messages))
 
 
 @commands.slash(
