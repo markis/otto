@@ -161,7 +161,7 @@ def update_sidebar_score(
         if widget.shortName == "Preseason Opponents":
             if widget.text != preseason:
                 widget.mod.update(text=preseason)
-        elif widget.shortName == "2020 Opponents":
+        elif widget.shortName == "2021 Opponents":
             if widget.text != regular:
                 widget.mod.update(text=regular)
         elif widget.shortName == "AFCN Standings":

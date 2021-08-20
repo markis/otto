@@ -17,7 +17,7 @@ def get_image_size(filename: str) -> Tuple[int, int]:
 
 def resize_image(
     filename: str, max_width: int = int(300 * 2), max_height: int = int(400 * 2)
-) -> str:
+) -> Tuple[str, int, int]:
     assert filename
 
     file_ext = os.path.splitext(filename)[1]
@@ -33,4 +33,7 @@ def resize_image(
             img.save(filename=new_file_name)
     except MissingDelegateError:
         new_file_name = filename
-    return new_file_name
+
+    width, height = get_image_size(new_file_name)
+
+    return new_file_name, width, height

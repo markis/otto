@@ -24,7 +24,7 @@ class NFLClient:
             """
               /v1/games?s={
                 "$query":{
-                  "week.season": 2020,
+                  "week.season": 2021,
                   "$or":[
                     {"homeTeam.abbr":"%s"},
                     {"visitorTeam.abbr":"%s"}
@@ -67,13 +67,13 @@ class NFLClient:
             % (team, team)
         )
 
-        return [Game(game_data) for game_data in data["data"]]
+        return [Game.from_nfl_dict(game_data) for game_data in data["data"]]
 
     def get_stat_leader(
         self,
         stat: str = "passing.yards",
         team: str = TEAM_NAME,
-        season: str = "2020",
+        season: str = "2021",
         season_type: str = "REG",
     ) -> str:
         stat_query = stat.replace(".", "{") + "}"
@@ -378,7 +378,7 @@ class NFLClient:
 
     def get_standings(
         self,
-        year: str = "2020",
+        year: str = "2021",
         teams: Optional[List[str]] = None,
         division: str = "AFC_NORTH",
     ) -> List[Record]:
@@ -456,7 +456,12 @@ class NFLClient:
         res = requests.get(
             url=url, headers={"Authorization": "Bearer " + self._get_client_token()}
         )
-        return res.json()
+        try:
+            return res.json()
+        except:
+            print(url)
+            print(res.text)
+            raise
 
     def _get_client_token(self, refresh: bool = False) -> str:
         if not refresh and self._token:

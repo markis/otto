@@ -1,6 +1,7 @@
 import inspect
 
 from typing import Any
+from unittest.mock import Mock
 
 
 def record_data(name: str, data: Any) -> None:
@@ -26,7 +27,7 @@ def generate() -> None:
         record_data(caller, data)
         return data
 
-    nflclient._get_api_data = data_logger
+    nflclient._get_api_data = data_logger  # type: ignore
 
     # NFL Client calls to get data
     nflclient.get_scores()
