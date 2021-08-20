@@ -23,7 +23,7 @@ OLD_SIDEBAR = """
 
 ----
 
-#2020 OPPONENTS
+#2021 OPPONENTS
 
 DATE|OPPONENT|TIME|
 |:---:|:--:|:---:|
@@ -87,7 +87,7 @@ mock_reddit = Mock(
             widgets=Mock(
                 sidebar=[
                     Mock(shortName="Preseason Opponents", text=""),
-                    Mock(shortName="2020 Opponents", text=""),
+                    Mock(shortName="2021 Opponents", text=""),
                     Mock(shortName="AFCN Standings", text=""),
                 ]
             ),

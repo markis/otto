@@ -1,17 +1,13 @@
 from datetime import datetime
 from datetime import timedelta
-from typing import Callable
 
-import praw
-
-from otto import get_reddit
-from otto import SUBREDDIT_NAME
 from otto import TEAM_NAME
 from otto.lib.nfl_client import NFLClient
 from otto.lib.weather_client import WeatherClient
 from otto.models.game import get_next_game
 from otto.models.team import get_location
 from otto.models.team import get_subreddit
+from otto.types import SendMessage
 from otto.utils import get_time
 
 weather_client = WeatherClient()
@@ -59,20 +55,17 @@ def _get_weather(team_abbr: str, game_time: datetime) -> str:
         return ""
 
 
-def _default_send_message(msg: str) -> None:
+async def _default_send_message(msg: str) -> None:
     """Default send_message will just print to console"""
     print(msg)
 
 
-def generate_game_thread(
-    reddit: praw.Reddit = get_reddit(),
-    sr_name: str = SUBREDDIT_NAME,
-    send_message: Callable[[str], None] = _default_send_message,
+async def generate_game_thread(
+    send_message: SendMessage = _default_send_message,
 ) -> None:
     nfl_client = NFLClient()
     games = nfl_client.get_scores()
 
-    sr = reddit.subreddit(sr_name)
     next_game = get_next_game(games, timedelta())
 
     assert next_game
@@ -160,7 +153,7 @@ def generate_game_thread(
 *Title*
 ```{title}```
     """
-    send_message(message)
+    await send_message(message)
 
 
 if __name__ == "__main__":

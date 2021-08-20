@@ -2,22 +2,20 @@ from typing import cast
 from typing import List
 from typing import Set
 
-import tinycss2
-
-from tinycss2.ast import IdentToken
-from tinycss2.ast import QualifiedRule
+import tinycss2.ast
+import tinycss2.parser
 
 
-def parse_stylesheet(css: str) -> List[QualifiedRule]:
-    return cast(List[QualifiedRule], tinycss2.parse_stylesheet(css))
+def parse_stylesheet(css: str) -> List[tinycss2.ast.QualifiedRule]:
+    return cast(List[tinycss2.ast.QualifiedRule], tinycss2.parser.parse_stylesheet(css))
 
 
-def serialize_stylesheet(parsed: List[QualifiedRule]) -> str:
+def serialize_stylesheet(parsed: List[tinycss2.ast.QualifiedRule]) -> str:
     return "".join([rule.serialize() for rule in parsed])
 
 
-def get_identity(rule: QualifiedRule) -> str:
-    assert isinstance(rule, QualifiedRule)
+def get_identity(rule: tinycss2.ast.QualifiedRule) -> str:
+    assert isinstance(rule, tinycss2.ast.QualifiedRule)
     return "".join(
         [token.value for token in rule.prelude if hasattr(token, "value")]
     ).strip()
@@ -42,24 +40,26 @@ def get_identity(rule: QualifiedRule) -> str:
 
 
 def find_all_rules_by_classes(
-    css_classes: Set[str], parsed: List[QualifiedRule]
-) -> List[QualifiedRule]:
+    css_classes: Set[str], parsed: List[tinycss2.ast.QualifiedRule]
+) -> List[tinycss2.ast.QualifiedRule]:
     result = []
     for rule in parsed:
-        if isinstance(rule, QualifiedRule):
+        if isinstance(rule, tinycss2.ast.QualifiedRule):
             identity = get_identity(rule)
             if identity in css_classes:
                 result.append(rule)
     return result
 
 
-def get_token_value_by_ident(rule: QualifiedRule, ident: str) -> List[QualifiedRule]:
+def get_token_value_by_ident(
+    rule: tinycss2.ast.QualifiedRule, ident: str
+) -> List[tinycss2.ast.QualifiedRule]:
     result_tokens = []
     record_next_tokens = False
     for token in rule.content:
         if (
             not record_next_tokens
-            and isinstance(token, IdentToken)
+            and isinstance(token, tinycss2.ast.IdentToken)
             and token.value == ident
         ):
             record_next_tokens = True

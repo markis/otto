@@ -1,11 +1,13 @@
 import logging
 
 from typing import Callable
+from typing import Coroutine
 from typing import Optional
 
 from praw import Reddit
 from praw.exceptions import APIException
 
+from otto.typing import SendMessage
 
 logger = logging.getLogger(__name__)
 
@@ -41,6 +43,7 @@ def ban_user(
     logger.info(f"{mod_name} banned {user_name}")
     sr = reddit.subreddit(sr_name)
 
+    ban_reason = ""
     if rule_violation and rule_violation > 0:
         ban_reason = get_rule(reddit, sr_name, rule_violation)
 
@@ -81,13 +84,15 @@ def set_link_type(reddit: Reddit, sr_name: str, link_type: str) -> str:
     return responses[link_type]
 
 
-def enable_text_posts(
-    reddit: Reddit, sr_name: str, send_message: Callable[[str], None]
+async def enable_text_posts(
+    reddit: Reddit, sr_name: str, send_message: SendMessage
 ) -> None:
-    send_message(set_link_type(reddit, sr_name, "any"))
+    result = set_link_type(reddit, sr_name, "any")
+    await send_message(result)
 
 
-def disable_text_posts(
-    reddit: Reddit, sr_name: str, send_message: Callable[[str], None]
+async def disable_text_posts(
+    reddit: Reddit, sr_name: str, send_message: SendMessage
 ) -> None:
-    send_message(set_link_type(reddit, sr_name, "link"))
+    result = set_link_type(reddit, sr_name, "link")
+    await send_message(result)
