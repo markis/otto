@@ -65,9 +65,8 @@ async def on_ready() -> None:
 )
 async def sidebar(ctx: SlashContext, url: str) -> None:
     try:
-        await update_sidebar_image(
-            reddit=get_reddit(), image_url=url, send_message=generate_send_message(ctx)
-        )
+        await update_sidebar_image(reddit=get_reddit(), image_url=url)
+        await ctx.send("Sidebar updated")
     except BaseException as err:
         await ctx.send(f"```{err}```")
         logger.error("/sidebar failed", exc_info=True)

@@ -1,8 +1,5 @@
 import logging
 
-from typing import Callable
-from typing import Coroutine
-
 import praw.exceptions
 import praw.models
 import tinycss2.ast
@@ -18,29 +15,18 @@ logger = logging.getLogger(__name__)
 
 
 async def update_sidebar_image(
-    reddit: praw.Reddit,
-    image_url: str,
-    send_message: Callable[[str], Coroutine[None, None, None]],
-    sr_name: str = SUBREDDIT_NAME,
+    reddit: praw.Reddit, image_url: str, sr_name: str = SUBREDDIT_NAME
 ) -> None:
-    await send_message("Downloading Image")
     image_path = download_image(image_url)
     sr_browns = reddit.subreddit(sr_name)
 
-    await send_message("Resizing Image")
     resize_image_path, width, height = resize_image(image_path)
-    await send_message("Ensure File Extension")
     resize_image_path, width, height = resize_image(image_path)
-    await send_message("Updating new reddit")
     update_new_reddit_sidebar_image(sr_browns, resize_image_path, width, height)
-    await send_message("Updating old reddit")
     update_old_reddit_sidebar_image(sr_browns, resize_image_path, width, height)
 
-    await send_message("Cleaning up temporary files")
     delete_file(image_path)
     delete_file(resize_image_path)
-
-    await send_message("Sidebar updated")
 
 
 def update_new_reddit_sidebar_image(
