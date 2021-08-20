@@ -2,11 +2,15 @@ import logging
 
 from typing import Callable
 from typing import Coroutine
+from typing import Optional
+from typing import Union
 
 import praw.exceptions
 import praw.models
 import tinycss2.ast
 import tinycss2.parser
+
+from click.decorators import argument
 
 from otto import SUBREDDIT_NAME
 from otto.errors import SidebarBackgroundImageError
@@ -56,6 +60,47 @@ def update_new_reddit_sidebar_image(
             break
 
 
+def _update_background_image_token(
+    rule: tinycss2.ast.QualifiedRule, sidebar_token: str
+) -> None:
+    token_location = 0
+    # find the location of background-image token
+    for i, token in enumerate(rule.content):
+        if (
+            isinstance(token, tinycss2.ast.IdentToken)
+            and token.lower_value == "background-image"
+        ):
+            token_location = i
+            break
+
+    # update the the value
+    for token in rule.content[token_location:]:
+        if isinstance(token, tinycss2.ast.URLToken):
+            token.value = sidebar_token
+            return
+        elif isinstance(token, tinycss2.ast.FunctionBlock):
+            argument: tinycss2.ast.StringToken = token.arguments[0]
+            argument.value = f'"{sidebar_token}"'
+            return
+    return
+
+
+def _update_size_token(
+    rule: tinycss2.ast.QualifiedRule, identity: str, representation: str
+) -> None:
+    token_location = 0
+    # find the location of identity token by name
+    for i, token in enumerate(rule.content):
+        if isinstance(token, tinycss2.ast.IdentToken) and token.value == identity:
+            token_location = i
+            break
+    # update the the value
+    for token in rule.content[token_location:]:
+        if isinstance(token, tinycss2.ast.DimensionToken):
+            token.representation = representation
+            return
+
+
 def update_old_reddit_sidebar_image(
     sr: praw.models.Subreddit, image_path: str, width: int, height: int
 ) -> None:
@@ -67,12 +112,7 @@ def update_old_reddit_sidebar_image(
     styles = sr_stylesheet.__call__()
     css = styles.stylesheet
 
-    try:
-        sr_stylesheet.upload(SIDEBAR_TOKEN, image_path)
-    except praw.exceptions.APIException:
-        raise
-    except praw.exceptions.PRAWException:
-        raise
+    sr_stylesheet.upload(SIDEBAR_TOKEN, image_path)
 
     parsed = tinycss2.parser.parse_stylesheet(css)
     for rule in parsed:
@@ -81,57 +121,18 @@ def update_old_reddit_sidebar_image(
                 [token.value for token in rule.prelude if hasattr(token, "value")]
             ).strip()
             if identity == SIDEBAR_CSS_NAME:
-                url_token = None
-                height_token = None
-                width_token = None
-                set_next_url_token = False
-                for token in rule.content:
-                    if token.value == "background-image":
-                        set_next_url_token = True
-                    elif set_next_url_token and isinstance(
-                        token, tinycss2.ast.URLToken
-                    ):
-                        url_token = token
-                        set_next_url_token = False
-                        break
+                width_token_representation = "300"
+                height_token_representation = "400"
+                if width > height and width < 600:
+                    height_token_representation = str(height)
+                    width_token_representation = "300"
+                elif width > height and width >= 600:
+                    height_token_representation = str(int(height / 2))
+                    width_token_representation = "300"
 
-                for token in rule.content:
-                    if token.value == "width":
-                        set_next_url_token = True
-                    elif set_next_url_token and isinstance(
-                        token, tinycss2.ast.DimensionToken
-                    ):
-                        width_token = token
-                        set_next_url_token = False
-                        break
-
-                for token in rule.content:
-                    if token.value == "height":
-                        set_next_url_token = True
-                    elif set_next_url_token and isinstance(
-                        token, tinycss2.ast.DimensionToken
-                    ):
-                        height_token = token
-                        set_next_url_token = False
-                        break
-
-                if url_token:
-                    sidebar_token = "%%" + SIDEBAR_TOKEN + "%%"
-                    if url_token.value != sidebar_token:
-                        url_token.value = sidebar_token
-                else:
-                    raise SidebarBackgroundImageError()
-
-                if height_token and width_token:
-                    if width > height and width < 600:
-                        height_token.representation = str(height)
-                        width_token.representation = "300"
-                    elif width > height and width >= 600:
-                        height_token.representation = str(int(height / 2))
-                        width_token.representation = "300"
-                    else:
-                        width_token.representation = "300"
-                        height_token.representation = "400"
+                _update_background_image_token(rule, f"%%{SIDEBAR_TOKEN}%%")
+                _update_size_token(rule, "height", height_token_representation)
+                _update_size_token(rule, "width", width_token_representation)
 
     updated_css = "".join([rule.serialize() for rule in parsed])
     sr_stylesheet.update(updated_css)

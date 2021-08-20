@@ -45,8 +45,8 @@ def generate_send_message(ctx: SlashContext) -> SendMessage:
 @bot.event
 async def on_ready() -> None:
     logger.info("Removing all commands")
-    await remove_all_commands(DISCORD_BOT_ID, DISCORD_TOKEN)
-    await remove_all_commands_in(DISCORD_BOT_ID, DISCORD_TOKEN, DISCORD_GUILD_ID)
+    # await remove_all_commands(DISCORD_BOT_ID, DISCORD_TOKEN)
+    # await remove_all_commands_in(DISCORD_BOT_ID, DISCORD_TOKEN, DISCORD_GUILD_ID)
     pass
 
 
@@ -64,9 +64,13 @@ async def on_ready() -> None:
     ],
 )
 async def sidebar(ctx: SlashContext, url: str) -> None:
-    await update_sidebar_image(
-        reddit=get_reddit(), image_url=url, send_message=generate_send_message(ctx)
-    )
+    try:
+        await update_sidebar_image(
+            reddit=get_reddit(), image_url=url, send_message=generate_send_message(ctx)
+        )
+    except BaseException as err:
+        await ctx.send(f"```{err}```")
+        logger.error("/sidebar failed", exc_info=True)
 
 
 @commands.slash(
