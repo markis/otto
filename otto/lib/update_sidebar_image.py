@@ -2,21 +2,15 @@ import logging
 
 from typing import Callable
 from typing import Coroutine
-from typing import Optional
-from typing import Union
 
 import praw.exceptions
 import praw.models
 import tinycss2.ast
 import tinycss2.parser
 
-from click.decorators import argument
-
 from otto import SUBREDDIT_NAME
-from otto.errors import SidebarBackgroundImageError
 from otto.utils import delete_file
 from otto.utils import download_image
-from otto.utils.image import get_image_size
 from otto.utils.image import resize_image
 
 
@@ -34,6 +28,8 @@ async def update_sidebar_image(
     sr_browns = reddit.subreddit(sr_name)
 
     await send_message("Resizing Image")
+    resize_image_path, width, height = resize_image(image_path)
+    await send_message("Ensure File Extension")
     resize_image_path, width, height = resize_image(image_path)
     await send_message("Updating new reddit")
     update_new_reddit_sidebar_image(sr_browns, resize_image_path, width, height)
