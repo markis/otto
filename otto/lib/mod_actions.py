@@ -1,13 +1,12 @@
 import logging
 
 from typing import Callable
-from typing import Coroutine
 from typing import Optional
 
 from praw import Reddit
 from praw.exceptions import APIException
 
-from otto.typing import SendMessage
+from otto.types import SendMessage
 
 logger = logging.getLogger(__name__)
 

@@ -2,17 +2,18 @@ from dataclasses import dataclass
 from datetime import datetime
 from datetime import timedelta
 from typing import Any
-from typing import cast
 from typing import Dict
 from typing import List
 from typing import Optional
-
-from _typeshed import SupportsLessThan
+from typing import TYPE_CHECKING
 
 from otto import TEAM_NAME
 from otto.models.team import Team
 from otto.utils import convert_isostring
 from otto.utils import get_now
+
+if TYPE_CHECKING:
+    from _typeshed import SupportsLessThan
 
 
 @dataclass(frozen=True)
@@ -120,7 +121,7 @@ class Game:
         )
 
 
-def _sort_games(game: Game) -> SupportsLessThan:
+def _sort_games(game: Game) -> "SupportsLessThan":
     return game.time_until_game
 
 

@@ -22,7 +22,7 @@ from otto.lib.game_thread import generate_game_thread
 from otto.lib.mod_actions import disable_text_posts
 from otto.lib.mod_actions import enable_text_posts
 from otto.lib.update_sidebar_image import update_sidebar_image
-from otto.typing import SendMessage
+from otto.types import SendMessage
 
 
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)
@@ -117,10 +117,9 @@ async def disable_text_posts_handler(ctx: SlashContext) -> None:
     guild_ids=guild_ids,
 )
 async def game_day_thread(ctx: SlashContext) -> None:
-    await generate_game_thread(get_reddit(), SUBREDDIT_NAME, generate_send_message(ctx))
+    await generate_game_thread(generate_send_message(ctx))
 
 
 if __name__ == "__main__":
-
-    logger.info("Starting the bot")
+    logger.info("Starting otto as discord bot")
     bot.run(DISCORD_TOKEN)

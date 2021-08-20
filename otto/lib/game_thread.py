@@ -49,10 +49,13 @@ def _get_standings_table(nfl_client: NFLClient, team: str, opponent: str) -> str
 def _get_weather(team_abbr: str, game_time: datetime) -> str:
     lat, lon = get_location(team_abbr)
     try:
-        weather = weather_client.get_weather(lat, lon, game_time)
-        return f"{weather.temperature}° - {weather.forecast} - Wind {weather.wind_direction} {weather.wind_speed}"
+        w = weather_client.get_weather(lat, lon, game_time)
+        if w:
+            return f"{w.temperature}° - {w.forecast} - Wind {w.wind_direction} {w.wind_speed}"
     except BaseException:
-        return ""
+        pass
+
+    return ""
 
 
 async def _default_send_message(msg: str) -> None:
