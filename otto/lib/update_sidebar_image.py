@@ -5,9 +5,10 @@ import praw.models
 import tinycss2.ast
 import tinycss2.parser
 
+from discord.file import File
+from discord_slash.context import SlashContext
 from praw import Reddit
 
-from otto.types import SendMessage
 from otto.utils import delete_file
 from otto.utils import download_image
 from otto.utils.image import resize_image
@@ -17,23 +18,25 @@ logger = logging.getLogger(__name__)
 
 
 async def update_sidebar_image(
-    reddit: Reddit, image_url: str, sr_name: str, send_message: SendMessage
+    reddit: Reddit, image_url: str, sr_name: str, ctx: SlashContext
 ) -> None:
-    msg = await send_message("Downloading Image")
     image_path = download_image(image_url)
     sr_browns = reddit.subreddit(sr_name)
 
-    await msg.edit(content="Resizing Image")
     resize_image_path, width, height = resize_image(image_path)
-    await msg.edit(content="Updating New Reddit")
     update_new_reddit_sidebar_image(sr_browns, resize_image_path, width, height)
-    await msg.edit(content="Updating Old Reddit")
     update_old_reddit_sidebar_image(sr_browns, resize_image_path, width, height)
 
-    await msg.edit(content="Cleaning up temporary files")
     delete_file(image_path)
+
+    # add the image to final update
+    picture = None
+    with open(resize_image_path, "rb") as f:
+        picture = File(f)
+        await ctx.send(content="Sidebar Updated", file=picture)
+
+    # delete the image
     delete_file(resize_image_path)
-    await msg.edit(content="Sidebar Updated")
 
 
 def update_new_reddit_sidebar_image(

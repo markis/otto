@@ -68,15 +68,13 @@ async def on_ready() -> None:
 )
 async def sidebar(ctx: SlashContext, url: str) -> None:
     try:
+        await ctx.defer()
         await update_sidebar_image(
-            reddit=get_reddit(),
-            sr_name=SUBREDDIT_NAME,
-            image_url=url,
-            send_message=generate_send_message(ctx),
+            reddit=get_reddit(), sr_name=SUBREDDIT_NAME, image_url=url, ctx=ctx
         )
     except BaseException as err:
-        await ctx.send(f'/sidebar "{url}" \n ```{err}```')
-        logger.error('/sidebar "{url}" failed', exc_info=True)
+        await ctx.send(f'/sidebar "{url}" failed \n ```{err}```')
+        logger.error(f'/sidebar "{url}" failed', exc_info=True)
 
 
 @commands.slash(
@@ -93,13 +91,18 @@ async def sidebar(ctx: SlashContext, url: str) -> None:
     ],
 )
 async def compliment(ctx: SlashContext, name: Optional[User] = None) -> None:
-    username = name.mention if name else ctx.author.mention
-    messages = [
-        f"You look nice today, {username}",
-        f"{username}, you're awesome!",
-        f"{username}, you're the Jarvis to my OBJ",
-    ]
-    await ctx.send(choice(messages))
+    try:
+        await ctx.defer()
+        username = name.mention if name else ctx.author.mention
+        messages = [
+            f"You look nice today, {username}",
+            f"{username}, you're awesome!",
+            f"{username}, you're the Jarvis to my OBJ",
+        ]
+        await ctx.send(choice(messages))
+    except BaseException as err:
+        await ctx.send(f'/compliment "{name}" failed \n ```{err}```')
+        logger.error(f'/compliment "{name}" failed', exc_info=True)
 
 
 @commands.slash(
@@ -108,7 +111,14 @@ async def compliment(ctx: SlashContext, name: Optional[User] = None) -> None:
     guild_ids=guild_ids,
 )
 async def enable_text_posts_handler(ctx: SlashContext) -> None:
-    await enable_text_posts(get_reddit(), SUBREDDIT_NAME, generate_send_message(ctx))
+    try:
+        await ctx.defer()
+        await enable_text_posts(
+            get_reddit(), SUBREDDIT_NAME, generate_send_message(ctx)
+        )
+    except BaseException as err:
+        await ctx.send(f"/enable_text_posts failed \n ```{err}```")
+        logger.error(f"/enable_text_posts failed", exc_info=True)
 
 
 @commands.slash(
@@ -117,8 +127,14 @@ async def enable_text_posts_handler(ctx: SlashContext) -> None:
     guild_ids=guild_ids,
 )
 async def disable_text_posts_handler(ctx: SlashContext) -> None:
-    """Disable text posts by only allowing link posts"""
-    await disable_text_posts(get_reddit(), SUBREDDIT_NAME, generate_send_message(ctx))
+    try:
+        await ctx.defer()
+        await disable_text_posts(
+            get_reddit(), SUBREDDIT_NAME, generate_send_message(ctx)
+        )
+    except BaseException as err:
+        await ctx.send(f"/disable_text_posts failed \n ```{err}```")
+        logger.error(f"/disable_text_posts failed", exc_info=True)
 
 
 @commands.slash(
@@ -127,7 +143,12 @@ async def disable_text_posts_handler(ctx: SlashContext) -> None:
     guild_ids=guild_ids,
 )
 async def game_day_thread(ctx: SlashContext) -> None:
-    await generate_game_thread(generate_send_message(ctx))
+    try:
+        await ctx.defer()
+        await generate_game_thread(generate_send_message(ctx))
+    except BaseException as err:
+        await ctx.send(f"/generate_game_thread failed \n ```{err}```")
+        logger.error(f"/generate_game_thread failed", exc_info=True)
 
 
 if __name__ == "__main__":
