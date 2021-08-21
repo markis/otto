@@ -2,19 +2,18 @@ import logging
 import sys
 
 from random import choice
+from typing import Optional
 
 import discord
 
 from discord.ext import commands
+from discord.user import User
 from discord_slash import SlashCommand
 from discord_slash import SlashContext
 from discord_slash.model import SlashCommandOptionType
 from discord_slash.model import SlashMessage
 from discord_slash.utils.manage_commands import create_option
-from discord_slash.utils.manage_commands import remove_all_commands
-from discord_slash.utils.manage_commands import remove_all_commands_in
 
-from otto import DISCORD_BOT_ID
 from otto import DISCORD_GUILD_ID
 from otto import DISCORD_TOKEN
 from otto import get_reddit
@@ -45,7 +44,10 @@ def generate_send_message(ctx: SlashContext) -> SendMessage:
 
 @bot.event
 async def on_ready() -> None:
-    logger.info("Removing all commands")
+    # logger.info("Removing all commands")
+    # from otto import DISCORD_BOT_ID
+    # from discord_slash.utils.manage_commands import remove_all_commands
+    # from discord_slash.utils.manage_commands import remove_all_commands_in
     # await remove_all_commands(DISCORD_BOT_ID, DISCORD_TOKEN)
     # await remove_all_commands_in(DISCORD_BOT_ID, DISCORD_TOKEN, DISCORD_GUILD_ID)
     pass
@@ -90,8 +92,8 @@ async def sidebar(ctx: SlashContext, url: str) -> None:
         )
     ],
 )
-async def compliment(ctx: SlashContext, name: str) -> None:
-    username = name if name else getattr(ctx.author, "name", "")
+async def compliment(ctx: SlashContext, name: Optional[User] = None) -> None:
+    username = name.mention if name else ctx.author.mention
     messages = [
         f"You look nice today, {username}",
         f"{username}, you're awesome!",
