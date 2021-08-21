@@ -9,6 +9,7 @@ from discord.ext import commands
 from discord_slash import SlashCommand
 from discord_slash import SlashContext
 from discord_slash.model import SlashCommandOptionType
+from discord_slash.model import SlashMessage
 from discord_slash.utils.manage_commands import create_option
 from discord_slash.utils.manage_commands import remove_all_commands
 from discord_slash.utils.manage_commands import remove_all_commands_in
@@ -36,8 +37,8 @@ guild_ids = [int(DISCORD_GUILD_ID or 0)]
 
 
 def generate_send_message(ctx: SlashContext) -> SendMessage:
-    async def send(message: str) -> None:
-        await ctx.send(content=message)
+    async def send(message: str) -> SlashMessage:
+        return await ctx.send(content=message)
 
     return send
 
@@ -65,11 +66,15 @@ async def on_ready() -> None:
 )
 async def sidebar(ctx: SlashContext, url: str) -> None:
     try:
-        await update_sidebar_image(reddit=get_reddit(), image_url=url)
-        await ctx.send("Sidebar updated")
+        await update_sidebar_image(
+            reddit=get_reddit(),
+            sr_name=SUBREDDIT_NAME,
+            image_url=url,
+            send_message=generate_send_message(ctx),
+        )
     except BaseException as err:
-        await ctx.send(f"```{err}```")
-        logger.error("/sidebar failed", exc_info=True)
+        await ctx.send(f'/sidebar "{url}" \n ```{err}```')
+        logger.error('/sidebar "{url}" failed', exc_info=True)
 
 
 @commands.slash(
