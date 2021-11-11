@@ -46,7 +46,5 @@ Source Title: "{source_title}"
 
 Reddit Title: "{post_title}"
 
-Levenshtein Distance: {levenshtein_distance}/100
-
-Levenshtein Distance Needed: {config.rule7_levenshtein_threshold}/100
-    """
+Levenshtein Distance: {levenshtein_distance}/{config.rule7_levenshtein_threshold}
+"""
