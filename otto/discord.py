@@ -25,8 +25,8 @@ from otto.lib.update_sidebar_image import update_sidebar_image
 from otto.types import SendMessage
 
 
-logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 logger = logging.getLogger("otto.discord")
+logging.basicConfig(stream=sys.stdout, level=logging.WARN)
 
 bot = commands.Bot(command_prefix="/", intents=discord.Intents.default())
 commands = SlashCommand(bot, sync_commands=True)
