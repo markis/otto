@@ -58,11 +58,26 @@ def convert_httpstring(dt: str) -> datetime:
 
 
 def download_image(image_url: str) -> str:
-    url_path = urllib.parse.urlparse(image_url).path
+    result = urllib.parse.urlparse(image_url)
+    url_path = result.path
+    domain = result.netloc
     file_ext = os.path.splitext(url_path)[1]
     file_name = tempfile.mkstemp(file_ext)[1]
-    urllib.request.urlretrieve(image_url, filename=file_name)
-    return file_name
+
+    if 'imgur.com' == domain and '/a/' in url_path:
+        # Album (Can't get images from here)
+        # TODO if you add `/zip` to the album url and then unzip it, the image should be in there
+        raise ValueError("Imgur albums aren't supported, yet")
+
+    elif 'imgur.com' == domain:
+        image_url = f"https://i.imgur.com/{url_path}.jpg"
+
+        urllib.request.urlretrieve(image_url, filename=file_name)
+        return file_name
+
+    else:
+        urllib.request.urlretrieve(image_url, filename=file_name)
+        return file_name
 
 
 def get_url_age(url: str) -> datetime:
