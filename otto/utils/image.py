@@ -1,13 +1,11 @@
 import os
 import tempfile
 
-from typing import Tuple
-
 from wand.exceptions import MissingDelegateError
 from wand.image import Image
 
 
-def get_image_size(filename: str) -> Tuple[int, int]:
+def get_image_size(filename: str) -> tuple[int, int]:
     try:
         with Image(filename=filename) as img:
             return img.width, img.height
@@ -30,9 +28,7 @@ def get_fileext(filename: str, img: Image) -> str:
     return ".png"
 
 
-def resize_image(
-    filename: str, max_width: int = int(300 * 2), max_height: int = int(400 * 2)
-) -> Tuple[str, int, int]:
+def resize_image(filename: str, max_width: int = int(300 * 2), max_height: int = int(400 * 2)) -> tuple[str, int, int]:
     assert filename
 
     new_file_name = None

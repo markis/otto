@@ -1,9 +1,6 @@
 import os
 
-from typing import Tuple
-
 from otto import ASSETS_DIRECTORY
-
 
 ABBR_TO_SUBREDDIT = {
     "KC": "/r/kansascitychiefs",
@@ -193,7 +190,7 @@ def get_position(abbr: str) -> int:
     return ABBR_TO_POSITION[abbr.upper()]
 
 
-def get_location(abbr: str) -> Tuple[float, float]:
+def get_location(abbr: str) -> tuple[float, float]:
     return ABBR_TO_LOCATION[abbr.upper()]
 
 
@@ -206,11 +203,11 @@ def get_name(id: str) -> str:
 
 
 def get_small_icon_path(abbr: str) -> str:
-    return os.path.normpath(ASSETS_DIRECTORY + "/small-teams/{}.png".format(abbr))
+    return os.path.normpath(ASSETS_DIRECTORY + f"/small-teams/{abbr}.png")
 
 
 def get_small_bw_icon_path(abbr: str) -> str:
-    return os.path.normpath(ASSETS_DIRECTORY + "/small-bw-teams/{}.png".format(abbr))
+    return os.path.normpath(ASSETS_DIRECTORY + f"/small-bw-teams/{abbr}.png")
 
 
 class Team:

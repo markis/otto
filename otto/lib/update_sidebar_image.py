@@ -1,25 +1,25 @@
 import logging
+from typing import Final
 
 import praw.exceptions
 import praw.models
 import tinycss2.ast
 import tinycss2.parser
-
+from discord.ext.commands import Context
+from discord.ext.commands.context import BotT
 from discord.file import File
-from discord_slash.context import SlashContext
 from praw import Reddit
 
-from otto.utils import delete_file
-from otto.utils import download_image
+from otto.utils import delete_file, download_image
 from otto.utils.image import resize_image
 
+SIDEBAR_TOKEN: Final = "sidebar"
+SIDEBAR_CSS_NAME: Final = "h1.redditname"
 
-logger = logging.getLogger(__name__)
+logger: Final = logging.getLogger(__name__)
 
 
-async def update_sidebar_image(
-    reddit: Reddit, image_url: str, sr_name: str, ctx: SlashContext
-) -> None:
+async def update_sidebar_image(reddit: Reddit, image_url: str, sr_name: str, ctx: Context[BotT]) -> None:
     image_path = download_image(image_url)
     sr_browns = reddit.subreddit(sr_name)
 
@@ -39,9 +39,7 @@ async def update_sidebar_image(
     delete_file(resize_image_path)
 
 
-def update_new_reddit_sidebar_image(
-    sr: praw.models.Subreddit, image_path: str, width: int, height: int
-) -> None:
+def update_new_reddit_sidebar_image(sr: praw.models.Subreddit, image_path: str, width: int, height: int) -> None:
     widgets: praw.models.SubredditWidgets = sr.widgets
     image_url = widgets.mod.upload_image(image_path)
     image_dicts = [{"width": width, "height": height, "linkUrl": "", "url": image_url}]
@@ -52,16 +50,11 @@ def update_new_reddit_sidebar_image(
             break
 
 
-def _update_background_image_token(
-    rule: tinycss2.ast.QualifiedRule, sidebar_token: str
-) -> None:
+def _update_background_image_token(rule: tinycss2.ast.QualifiedRule, sidebar_token: str) -> None:
     token_location = 0
     # find the location of background-image token
     for i, token in enumerate(rule.content):
-        if (
-            isinstance(token, tinycss2.ast.IdentToken)
-            and token.lower_value == "background-image"
-        ):
+        if isinstance(token, tinycss2.ast.IdentToken) and token.lower_value == "background-image":
             token_location = i
             break
 
@@ -77,9 +70,7 @@ def _update_background_image_token(
     return
 
 
-def _update_size_token(
-    rule: tinycss2.ast.QualifiedRule, identity: str, representation: str
-) -> None:
+def _update_size_token(rule: tinycss2.ast.QualifiedRule, identity: str, representation: str) -> None:
     token_location = 0
     # find the location of identity token by name
     for i, token in enumerate(rule.content):
@@ -93,12 +84,8 @@ def _update_size_token(
             return
 
 
-def update_old_reddit_sidebar_image(
-    sr: praw.models.Subreddit, image_path: str, width: int, height: int
-) -> None:
+def update_old_reddit_sidebar_image(sr: praw.models.Subreddit, image_path: str, width: int, height: int) -> None:
     # Update old Reddit
-    SIDEBAR_TOKEN = "sidebar"
-    SIDEBAR_CSS_NAME = "h1.redditname"
 
     sr_stylesheet = sr.stylesheet
     styles = sr_stylesheet.__call__()
@@ -109,9 +96,7 @@ def update_old_reddit_sidebar_image(
     parsed = tinycss2.parser.parse_stylesheet(css)
     for rule in parsed:
         if isinstance(rule, tinycss2.ast.QualifiedRule):
-            identity = "".join(
-                [token.value for token in rule.prelude if hasattr(token, "value")]
-            ).strip()
+            identity = "".join([token.value for token in rule.prelude if hasattr(token, "value")]).strip()
             if identity == SIDEBAR_CSS_NAME:
                 width_token_representation = "300"
                 height_token_representation = "400"

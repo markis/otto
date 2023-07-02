@@ -1,5 +1,3 @@
-from typing import Dict
-
 from otto.models.team import get_abbr
 
 
@@ -31,7 +29,7 @@ class Record:
     road_loss: int
     road_tie: int
 
-    def __init__(self, data: Dict[str, str]):
+    def __init__(self, data: dict[str, str]):
         self.abbr = get_abbr(data["nickName"])
 
         self.win = int(data["overallWin"])

@@ -1,10 +1,6 @@
 import operator
 import re
-
-from typing import Any
-from typing import Dict
-from typing import List
-from typing import Optional
+from typing import Any, Final
 
 import requests
 
@@ -12,14 +8,13 @@ from otto import TEAM_NAME
 from otto.models.game import Game
 from otto.models.record import Record
 
-
-API_URL = "https://api.nfl.com"
+API_URL: Final = "https://api.nfl.com"
 
 
 class NFLClient:
-    _token: Optional[str] = None
+    _token: str | None = None
 
-    def get_scores(self, team: str = TEAM_NAME) -> List[Game]:
+    def get_scores(self, team: str = TEAM_NAME) -> list[Game]:
         data = self._get_api_data(
             """
               /v1/games?s={
@@ -63,7 +58,7 @@ class NFLClient:
                 },
                 networkChannels
               }
-            """
+            """  # noqa: UP031
             % (team, team)
         )
 
@@ -96,7 +91,7 @@ class NFLClient:
               },
               %s,
             }
-          """
+          """  # noqa: UP031
             % (season, season_type, team, stat, stat_query)
         )
         result = ""
@@ -108,16 +103,12 @@ class NFLClient:
             for player in players:
                 stat_value = self._get_stat_value(stat, player)
                 if stat_value and top_stat_value <= stat_value:
-                    names.append(
-                        player["person"]["firstName"]
-                        + " "
-                        + player["person"]["lastName"]
-                    )
+                    names.append(player["person"]["firstName"] + " " + player["person"]["lastName"])
             result = ", ".join(names)
 
         return result
 
-    def _get_stat_value(self, stat: str, player: Dict[str, Any]) -> int:
+    def _get_stat_value(self, stat: str, player: dict[str, Any]) -> int:
         """
         stat example: "passing.yards", "defensive.interceptions"
         person example: { "firstName": "Baker", "lastName": "Mayfield"}
@@ -201,7 +192,7 @@ class NFLClient:
                   }
                 }
               }
-            """
+            """  # noqa: UP031
             % (game_id)
         )
         return data["data"]["viewer"]["game"]
@@ -371,7 +362,7 @@ class NFLClient:
               }
             }
           }
-       """
+       """  # noqa: UP031
             % (id)
         )
         return data
@@ -379,9 +370,9 @@ class NFLClient:
     def get_standings(
         self,
         year: str = "2021",
-        teams: Optional[List[str]] = None,
+        teams: list[str] | None = None,
         division: str = "AFC_NORTH",
-    ) -> List[Record]:
+    ) -> list[Record]:
         data = self._get_api_data(
             """
               /v3/shield/?variables=null&query=query{
@@ -438,7 +429,7 @@ class NFLClient:
                   }
                 }
               }
-            """
+            """  # noqa: UP031
             % (year)
         )
         edges = data["data"]["viewer"]["standings"]["edges"]
@@ -453,9 +444,7 @@ class NFLClient:
 
     def _get_api_data(self, url: str) -> Any:
         url = API_URL + re.sub(r"[\n\s]+", " ", url).strip()
-        res = requests.get(
-            url=url, headers={"Authorization": "Bearer " + self._get_client_token()}
-        )
+        res = requests.get(url=url, headers={"Authorization": "Bearer " + self._get_client_token()})
         try:
             return res.json()
         except:

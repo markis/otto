@@ -1,7 +1,5 @@
 import inspect
-
 from typing import Any
-from unittest.mock import Mock
 
 
 def record_data(name: str, data: Any) -> None:

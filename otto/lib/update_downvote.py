@@ -1,26 +1,29 @@
 from datetime import datetime
-from typing import List
+from typing import Final
 
 import praw
+from praw.reddit import Subreddit
 
 from otto.config import Config
-from otto.models.game import Game
-from otto.models.game import get_last_game
-from otto.models.game import get_next_game
-from otto.models.team import get_position
-from otto.models.team import get_small_bw_icon_path
-from otto.models.team import get_small_icon_path
+from otto.models.game import Game, get_last_game, get_next_game
+from otto.models.team import get_position, get_small_bw_icon_path, get_small_icon_path
 from otto.utils import get_url_age
-from otto.utils.css import find_all_rules_by_classes
-from otto.utils.css import get_identity
-from otto.utils.css import get_token_value_by_ident
-from otto.utils.css import parse_stylesheet
-from otto.utils.css import serialize_stylesheet
+from otto.utils.css import (
+    find_all_rules_by_classes,
+    get_identity,
+    get_token_value_by_ident,
+    parse_stylesheet,
+    serialize_stylesheet,
+)
+
+# Update old Reddit
+DOWNVOTE_UNVOTED_TOKEN: Final = "%%teamsmallfade%%"
+DOWNVOTE_UNVOTED: Final = ".arrow.down"
+DOWNVOTE_VOTED_TOKEN: Final = "%%teamsmall%%"
+DOWNVOTE_VOTED: Final = ".arrow.downmod"
 
 
-def update_downvote(
-    config: Config, reddit: praw.Reddit, sr_name: str, games: List[Game]
-) -> None:
+def update_downvote(config: Config, reddit: praw.Reddit, sr_name: str, games: list[Game]) -> None:
     sr = reddit.subreddit(sr_name)
     next_game = get_next_game(games, config.downvotes_delay)
     last_game = get_last_game(games, config.downvotes_delay)
@@ -40,7 +43,7 @@ def update_downvote(
 
 def update_new_downvote(
     reddit: praw.Reddit,
-    sr: praw.models.Subreddit,
+    sr: Subreddit,
     next_abbr: str,
     last_game_datetime: datetime,
 ) -> None:
@@ -49,9 +52,7 @@ def update_new_downvote(
 
     data = reddit.get(praw.const.API_PATH["structured_styles"].format(subreddit=sr))
 
-    current_downvote_icon_inactive_age = get_url_age(
-        data["data"]["style"]["postDownvoteIconInactive"]
-    )
+    current_downvote_icon_inactive_age = get_url_age(data["data"]["style"]["postDownvoteIconInactive"])
 
     if (
         current_downvote_icon_inactive_age < last_game_datetime
@@ -60,12 +61,8 @@ def update_new_downvote(
         active_image_path = get_small_icon_path(next_abbr)
         inactive_image_path = get_small_bw_icon_path(next_abbr)
 
-        active_down_url = sr.stylesheet._upload_style_asset(
-            active_image_path, "postDownvoteIconActive"
-        )
-        inactive_down_url = sr.stylesheet._upload_style_asset(
-            inactive_image_path, "postDownvoteIconInactive"
-        )
+        active_down_url = sr.stylesheet._upload_style_asset(active_image_path, "postDownvoteIconActive")
+        inactive_down_url = sr.stylesheet._upload_style_asset(inactive_image_path, "postDownvoteIconInactive")
         sr.stylesheet._update_structured_styles(
             {
                 "postVoteIcons": "custom",
@@ -75,15 +72,9 @@ def update_new_downvote(
         )
 
 
-def update_old_downvote(sr: praw.models.Subreddit, team: str) -> None:
+def update_old_downvote(sr: Subreddit, team: str) -> None:
     assert sr, "`sr` wasn't specified"
     assert team, "`team` wasn't specified"
-
-    # Update old Reddit
-    DOWNVOTE_UNVOTED_TOKEN = "%%teamsmallfade%%"
-    DOWNVOTE_UNVOTED = ".arrow.down"
-    DOWNVOTE_VOTED_TOKEN = "%%teamsmall%%"
-    DOWNVOTE_VOTED = ".arrow.downmod"
 
     sr_stylesheet = sr.stylesheet
     styles = sr_stylesheet.__call__()

@@ -2,18 +2,13 @@ import datetime
 import logging
 import threading
 
-from typing import Type
-
 from praw import Reddit
 
-from otto import get_reddit
-from otto import SUBREDDIT_NAME
-from otto.config import Config
-from otto.config import get_config
+from otto import SUBREDDIT_NAME, get_reddit
+from otto.config import Config, get_config
 from otto.lib.nfl_client import NFLClient
 from otto.lib.update_downvote import update_downvote
 from otto.lib.update_sidebar_score import update_sidebar_score
-
 
 logger = logging.getLogger(__name__)
 
@@ -28,13 +23,13 @@ def run_jobs(
     config: Config,
     reddit: Reddit = get_reddit(),
     sr_name: str = SUBREDDIT_NAME,
-    timer: Type[threading.Timer] = threading.Timer,
+    timer: type[threading.Timer] = threading.Timer,
 ) -> None:
     def _run_jobs() -> None:
         run_jobs(config, reddit, sr_name, timer)
 
     timer(300, _run_jobs).start()
-    logger.info("Running Jobs: {}".format(datetime.datetime.now()))
+    logger.info(f"Running Jobs: {datetime.datetime.now()}")
     client = NFLClient()
     games = client.get_scores()
     records = client.get_standings()

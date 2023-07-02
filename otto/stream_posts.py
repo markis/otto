@@ -1,17 +1,17 @@
-import asyncio
 import datetime
 import logging
 
 from praw import Reddit
 
-from otto import get_reddit
-from otto import SUBREDDIT_NAME
-from otto.config import Config
-from otto.config import get_config
+from otto import SUBREDDIT_NAME, get_reddit
+from otto.config import Config, get_config
 from otto.lib.check_posts import check_post
 
-
 logger = logging.getLogger(__name__)
+
+
+def run() -> None:
+    main(reddit=get_reddit(), sr_name=SUBREDDIT_NAME)
 
 
 def main(reddit: Reddit = get_reddit(), sr_name: str = SUBREDDIT_NAME) -> None:
@@ -29,4 +29,4 @@ def stream_posts(config: Config, reddit: Reddit = get_reddit()) -> None:
 
 
 if __name__ == "__main__":
-    main()
+    run()

@@ -3,6 +3,7 @@ __pycache__
 /build
 /.vscode
 /otto-venv
+/venv
 /.coverage
 /.pytest_cache
 /.mypy_cache

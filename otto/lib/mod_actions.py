@@ -1,7 +1,5 @@
 import logging
-
-from typing import Callable
-from typing import Optional
+from collections.abc import Callable
 
 from praw import Reddit
 from praw.exceptions import APIException
@@ -31,10 +29,10 @@ def ban_user(
     send_message: Callable[[str], None],
     mod_name: str,
     user_name: str,
-    rule_violation: Optional[int],
-    duration: Optional[int],
-    ban_message: Optional[str],
-    note: Optional[str],
+    rule_violation: int | None,
+    duration: int | None,
+    ban_message: str | None,
+    note: str | None,
 ) -> None:
     if user_name.startswith("u/"):
         user_name = user_name[2:]
@@ -62,9 +60,7 @@ def ban_user(
     if duration:
         ban_duration = f"for {duration} days"
 
-    send_message(
-        f'u/{user_name} has been banned {ban_duration} for violating "{ban_reason}"'
-    )
+    send_message(f'u/{user_name} has been banned {ban_duration} for violating "{ban_reason}"')
 
 
 def set_link_type(reddit: Reddit, sr_name: str, link_type: str) -> str:
@@ -83,15 +79,11 @@ def set_link_type(reddit: Reddit, sr_name: str, link_type: str) -> str:
     return responses[link_type]
 
 
-async def enable_text_posts(
-    reddit: Reddit, sr_name: str, send_message: SendMessage
-) -> None:
+async def enable_text_posts(reddit: Reddit, sr_name: str, send_message: SendMessage) -> None:
     result = set_link_type(reddit, sr_name, "any")
     await send_message(result)
 
 
-async def disable_text_posts(
-    reddit: Reddit, sr_name: str, send_message: SendMessage
-) -> None:
+async def disable_text_posts(reddit: Reddit, sr_name: str, send_message: SendMessage) -> None:
     result = set_link_type(reddit, sr_name, "link")
     await send_message(result)
