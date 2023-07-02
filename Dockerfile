@@ -19,18 +19,18 @@ FROM python:3-slim as otto
 #CMD [ "-m", "otto.app" ]
 #WORKDIR /app
 
-ENV MAGICK_HOME=/usr \
-    PIP_DISABLE_PIP_VERSION_CHECK=1 \
-    PIP_DISABLE_ROOT_WARNING=1 \
-    PIP_ROOT_USER_ACTION=ignore \
-    PIP_CACHE_DIR="/var/cache/pip/"
-
 # Wand dependency for image manipulation
+ENV MAGICK_HOME=/usr
 RUN --mount=type=cache,target=/var/lib/apt/lists \
     --mount=type=cache,target=/var/cache \
     --mount=type=tmpfs,target=/var/log \
     apt-get update && \
-    apt-get install -y imagemagick
+    apt-get install -y imagemagick build-essential cmake gcc ninja-build
+
+ENV PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PIP_DISABLE_ROOT_WARNING=1 \
+    PIP_ROOT_USER_ACTION=ignore \
+    PIP_CACHE_DIR="/var/cache/pip/"
 
 RUN --mount=type=cache,target=/var/cache \
     --mount=from=base,src=/app/dist/,target=/tmp \
