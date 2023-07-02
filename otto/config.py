@@ -62,5 +62,4 @@ def get_config(reddit: Reddit, subreddit_name: str) -> Config:
     wiki_page = sr.wiki[OTTO_CONFIG_PATH]
     config_doc = wiki_page.content_md
     config_values = load(config_doc, Loader=Loader)
-    print(config_values)
     return Config.from_dict(config_values)
