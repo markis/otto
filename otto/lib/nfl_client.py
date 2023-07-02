@@ -1,6 +1,6 @@
 import operator
 import re
-from typing import Any
+from typing import Any, Final
 
 import requests
 
@@ -8,7 +8,7 @@ from otto import TEAM_NAME
 from otto.models.game import Game
 from otto.models.record import Record
 
-API_URL = "https://api.nfl.com"
+API_URL: Final = "https://api.nfl.com"
 
 
 class NFLClient:
@@ -58,7 +58,7 @@ class NFLClient:
                 },
                 networkChannels
               }
-            """
+            """  # noqa: UP031
             % (team, team)
         )
 
@@ -91,7 +91,7 @@ class NFLClient:
               },
               %s,
             }
-          """
+          """  # noqa: UP031
             % (season, season_type, team, stat, stat_query)
         )
         result = ""
@@ -192,7 +192,7 @@ class NFLClient:
                   }
                 }
               }
-            """
+            """  # noqa: UP031
             % (game_id)
         )
         return data["data"]["viewer"]["game"]
@@ -362,7 +362,7 @@ class NFLClient:
               }
             }
           }
-       """
+       """  # noqa: UP031
             % (id)
         )
         return data
@@ -429,7 +429,7 @@ class NFLClient:
                   }
                 }
               }
-            """
+            """  # noqa: UP031
             % (year)
         )
         edges = data["data"]["viewer"]["standings"]["edges"]

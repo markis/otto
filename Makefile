@@ -5,11 +5,11 @@ build: venv pre-commit
 
 .PHONY: lint
 lint: pre-commit
-	@pre-commit run --all-files
+	@ruff check .
 
 .PHONY: pre-commit
 pre-commit:
-	@command -v pre-commit >/dev/null || pip install pre-commit
+	@command -v ruff >/dev/null || pip install ruff
 
 .PHONY: venv
 venv:
