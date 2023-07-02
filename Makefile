@@ -10,26 +10,24 @@ lint: pre-commit
 .PHONY: pre-commit
 pre-commit:
 	@command -v pre-commit >/dev/null || pip install pre-commit
-	@pre-commit install -f --install-hooks
 
 .PHONY: venv
 venv:
-	@test -d otto-venv || virtualenv -p python3 otto-venv
-	@source otto-venv/bin/activate
-	@pip install -Ur requirements-dev.txt
+	@test -d venv || python3 -m venv venv
+	@source venv/bin/activate
+	@pip install '.[dev]' 
 
 .PHONY: test-drone
-test-drone:
-	@pip install -Ur requirements-dev.txt
+test-ci:
+	@pip install '.[dev]' 
 	@make test
 
 .PHONY: test
 test:
 	@command -v coverage >/dev/null || pip install coverage
-	@coverage run  --source="otto/" -m py.test tests/*_test.py
-	@coverage report -m
+	@python -m pytest tests/*_test.py
 
 .PHONY: clean
 clean:
-	@rm -rf otto-venv
+	@rm -rf venv
 	@find -iname "*.pyc" -delete

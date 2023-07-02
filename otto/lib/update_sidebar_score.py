@@ -1,17 +1,14 @@
 import re
-
+from datetime import datetime
 from typing import Any
-from typing import List
 
 import praw
 
 from otto.config import Config
 from otto.models.game import Game
 from otto.models.record import Record
-from otto.models.team import get_name
-from otto.models.team import get_subreddit
-from otto.utils import get_date
-from otto.utils import get_time
+from otto.models.team import get_name, get_subreddit
+from otto.utils import get_date, get_time
 
 spacer = "&nbsp;&nbsp;&nbsp;"
 season_table_header = f"""
@@ -74,10 +71,10 @@ def get_game_outcome(game: Game) -> str:
     return outcome
 
 
-def _get_seasons(games: List[Game]) -> Any:
+def _get_seasons(games: list[Game]) -> Any:
     preseason = list()
     regular = list()
-    last_game_date = None
+    last_game_date: datetime | None = None
     for game in games:
         date = get_date(game.game_time)
         at = not game.at_home and "@ " or "vs"
@@ -108,7 +105,7 @@ def _maybe_add_tie(tie: int) -> str:
         return ""
 
 
-def _get_records(records: List[Record]) -> str:
+def _get_records(records: list[Record]) -> str:
     standings = list()
     for record in records:
         abbr = record.abbr
@@ -128,8 +125,8 @@ def update_sidebar_score(
     config: Config,
     reddit: praw.Reddit,
     sr_name: str,
-    games: List[Game],
-    records: List[Record],
+    games: list[Game],
+    records: list[Record],
 ) -> None:
     seasons = _get_seasons(games)
     standings = _get_records(records)
@@ -140,9 +137,7 @@ def update_sidebar_score(
 
     desc = settings["description"]
     new_desc = re.sub(standings_regex, r"\1" + standings + r"\3", desc, 1)
-    new_desc = re.sub(
-        preseason_regex, r"\1" + seasons["preseason"] + r"\3", new_desc, 1
-    )
+    new_desc = re.sub(preseason_regex, r"\1" + seasons["preseason"] + r"\3", new_desc, 1)
     new_desc = re.sub(regular_regex, r"\1" + seasons["regular"] + r"\3", new_desc, 1)
 
     if desc != new_desc:

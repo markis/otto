@@ -1,0 +1,77 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "otto"
+version = "1.0.0"
+authors = [
+  {name = "Markis Taylor", email = "m@rkis.net"}
+]
+description = "OttoGrahaminator"
+requires-python = ">=3.11,<4"
+dependencies = [
+  "fuzzywuzzy[speedup]==0.18.0",
+  "praw==7.7.0",
+  "py-cord==2.4.1",
+  "pytz==2023.3",
+  "PyYAML==6.0",
+  "python-twitter==3.5",
+  "pytimeparse==1.1.8",
+  "tinycss2==1.2.1",
+  "wand==0.6.11",
+  "types-pytz==2023.3.0.0",
+  "types-PyYAML==6.0.12.10",
+  "types-requests==2.31.0.1",
+]
+
+[project.scripts]
+otto_discord = "otto.discord:run"
+otto_stream_posts = "otto.stream_posts:run"
+
+[tool.hatch.build.targets.wheel.hooks.mypyc]
+dependencies = [
+  "types-pytz==2023.3.0.0",
+  "types-PyYAML==6.0.12.10",
+  "types-requests==2.31.0.1",
+  "hatch-mypyc==0.16.0"
+]
+exclude = ["otto/discord.py"]
+mypy-args = [
+  "--strict",
+  "--ignore-missing-imports",
+  "--allow-untyped-decorators",
+]
+
+[project.optional-dependencies]
+dev = [
+  "black==23.3.0",
+  "coverage==7.2.7",
+  "pytest==7.4.0",
+  "mypy==1.4.1",
+  "ruff==0.0.275",
+]
+
+[tool.coverage.run]
+source = ["otto/"]
+omit = ["*/__main__.py"]
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra"
+testpaths = ["tests"]
+
+[tool.black]
+target-version = ["py311"]
+line-length = 120
+
+[tool.mypy]
+strict = true
+ignore_missing_imports = true
+disallow_untyped_decorators = false
+
+[tool.ruff]
+target-version = "py311"
+line-length = 120
+select = [ "E", "F", "W", "Q", "UP", "I", "N" ]
+

@@ -1,25 +1,17 @@
 import html
 import re
 
-from typing import Optional
-
 import twitter
 
-from otto import TWITTER_KEY
-from otto import TWITTER_SECRET
+from otto import TWITTER_KEY, TWITTER_SECRET
 
-
-twitter_status_url_re = re.compile(
-    r"^https?:\/\/(mobile.)?twitter\.com\/(?:#!\/)?(\w+)\/status(es)?\/(\d+)"
-)
+twitter_status_url_re = re.compile(r"^https?:\/\/(mobile.)?twitter\.com\/(?:#!\/)?(\w+)\/status(es)?\/(\d+)")
 truncated_tweet_re = re.compile(r"(.*?)(\…?\s*)https:\/\/t.co\/.*?$")
 
 
 def get_status(status_id: int) -> twitter.models.Status:
     if not TWITTER_KEY or not TWITTER_SECRET:
-        raise ValueError(
-            f"TWITTER_KEY: {TWITTER_KEY}, TWITTER_SECRET: {TWITTER_SECRET}"
-        )
+        raise ValueError(f"TWITTER_KEY: {TWITTER_KEY}, TWITTER_SECRET: {TWITTER_SECRET}")
 
     api = twitter.Api(
         consumer_key=TWITTER_KEY.encode("utf8"),
@@ -29,7 +21,7 @@ def get_status(status_id: int) -> twitter.models.Status:
     return api.GetStatus(status_id)
 
 
-def get_status_id(url: str) -> Optional[int]:
+def get_status_id(url: str) -> int | None:
     match = twitter_status_url_re.match(url)
     if not match:
         return None

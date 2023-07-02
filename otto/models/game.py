@@ -1,25 +1,16 @@
 from dataclasses import dataclass
-from datetime import datetime
-from datetime import timedelta
+from datetime import datetime, timedelta
 from typing import Any
-from typing import Dict
-from typing import List
-from typing import Optional
-from typing import TYPE_CHECKING
 
 from otto import TEAM_NAME
 from otto.models.team import Team
-from otto.utils import convert_isostring
-from otto.utils import get_now
-
-if TYPE_CHECKING:
-    from _typeshed import SupportsLessThan
+from otto.utils import convert_isostring, get_now
 
 
 @dataclass(frozen=True)
 class Game:
     id: str
-    game_detail_id: Optional[str]
+    game_detail_id: str | None
     game_time: datetime
     season: str
     season_type: str
@@ -32,9 +23,9 @@ class Game:
     venue_name: str
     venue_city: str
     venue_state: str
-    networks: List[str]
+    networks: list[str]
 
-    data: Dict[str, Any]
+    data: dict[str, Any]
 
     @property
     def time_until_game(self) -> timedelta:
@@ -43,7 +34,7 @@ class Game:
         return datetime(1970, 1, 1) - get_now()
 
     @classmethod
-    def from_nfl_dict(cls, data: Dict[str, Any]) -> "Game":
+    def from_nfl_dict(cls, data: dict[str, Any]) -> "Game":
         assert data
 
         id = data["id"]
@@ -74,15 +65,9 @@ class Game:
 
         at_home = False
         opponent = Team("", "")
-        if (
-            visitor_team
-            and isinstance(visitor_team, dict)
-            and visitor_team.get("abbr") != TEAM_NAME
-        ):
+        if visitor_team and isinstance(visitor_team, dict) and visitor_team.get("abbr") != TEAM_NAME:
             at_home = True
-            opponent = Team(
-                visitor_team.get("abbr", ""), visitor_team.get("nickName", "")
-            )
+            opponent = Team(visitor_team.get("abbr", ""), visitor_team.get("nickName", ""))
         elif home_team and isinstance(home_team, dict):
             at_home = False
             opponent = Team(home_team.get("abbr", ""), home_team.get("nickName", ""))
@@ -121,32 +106,20 @@ class Game:
         )
 
 
-def _sort_games(game: Game) -> "SupportsLessThan":
-    return game.time_until_game
-
-
-def get_next_game(games: List[Game], next_opp_delay: timedelta) -> Optional[Game]:
+def get_next_game(games: list[Game], next_opp_delay: timedelta) -> Game | None:
     next_game = None
-    games.sort(key=_sort_games)
-    games_after_delay = [
-        game
-        for game in games
-        if game.time_until_game and next_opp_delay < game.time_until_game
-    ]
+    games.sort(key=lambda game: game.time_until_game)
+    games_after_delay = [game for game in games if game.time_until_game and next_opp_delay < game.time_until_game]
     if games_after_delay:
         next_game = games_after_delay[0]
 
     return next_game
 
 
-def get_last_game(games: List[Game], next_opp_delay: timedelta) -> Optional[Game]:
+def get_last_game(games: list[Game], next_opp_delay: timedelta) -> Game | None:
     next_game = None
-    games.sort(key=_sort_games, reverse=True)
-    games_before_delay = [
-        game
-        for game in games
-        if game.time_until_game and next_opp_delay > game.time_until_game
-    ]
+    games.sort(key=lambda game: game.time_until_game, reverse=True)
+    games_before_delay = [game for game in games if game.time_until_game and next_opp_delay > game.time_until_game]
     if games_before_delay:
         next_game = games_before_delay[0]
 

@@ -2,12 +2,10 @@ import os
 import tempfile
 import urllib.parse
 import urllib.request
-
 from datetime import datetime
 
 import pytz
 import requests
-
 
 TIMEZONE = pytz.timezone("America/New_York")
 

@@ -1,13 +1,8 @@
 import inspect
 import json
 import os
-
+from collections.abc import Callable
 from typing import Any
-from typing import Callable
-from typing import Dict
-from typing import List
-from unittest.mock import MagicMock
-from unittest.mock import MagicProxy
 from unittest.mock import Mock
 
 from praw import Reddit
@@ -106,12 +101,12 @@ def get_mock_reddit() -> Callable[[], Reddit]:
 
 def get_mock_request_get() -> Callable[[], Any]:
     def get_mock_data(name: str) -> Any:
-        f = open(f"{os.getcwd()}/tests/data/{name}.json", "r")
+        f = open(f"{os.getcwd()}/tests/data/{name}.json")
         obj = json.load(f)
         f.close()
         return Mock(json=Mock(return_value=obj))
 
-    def request_get(*args: List[Any], **kwargs: Dict[Any, Any]) -> Any:
+    def request_get(*args: list[Any], **kwargs: dict[Any, Any]) -> Any:
         curframe = inspect.currentframe()
         calframe = inspect.getouterframes(curframe, 2)
         caller = calframe[2][3]

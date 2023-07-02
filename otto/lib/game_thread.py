@@ -1,12 +1,11 @@
-from datetime import datetime
-from datetime import timedelta
+import asyncio
+from datetime import datetime, timedelta
 
 from otto import TEAM_NAME
 from otto.lib.nfl_client import NFLClient
 from otto.lib.weather_client import WeatherClient
 from otto.models.game import get_next_game
-from otto.models.team import get_location
-from otto.models.team import get_subreddit
+from otto.models.team import get_location, get_subreddit
 from otto.types import SendMessage
 from otto.utils import get_time
 
@@ -160,4 +159,4 @@ async def generate_game_thread(
 
 
 if __name__ == "__main__":
-    generate_game_thread()
+    asyncio.run(generate_game_thread())

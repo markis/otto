@@ -1,13 +1,6 @@
-from threading import Event
-from typing import Any
-from unittest.mock import MagicMock
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
-from pytest import fixture
-
-from tests.mock import get_mock_reddit
-from tests.mock import get_mock_request_get
-from tests.mock import STRUCTURED_STYLES
+from tests.mock import STRUCTURED_STYLES, get_mock_reddit, get_mock_request_get
 
 # from tests.mock import NFL_API_GAME_RESPONSE
 # from tests.mock import NFL_API_STANDINGS_RESPONSE
@@ -29,9 +22,7 @@ def test_jobs(
     requests_get: MagicMock,
     get_reddit: MagicMock,
 ) -> None:
-    requests_post.side_effect = [
-        MagicMock(json=MagicMock(return_value={"access_token": "123"}))
-    ]
+    requests_post.side_effect = [MagicMock(json=MagicMock(return_value={"access_token": "123"}))]
     # requests_get.side_effect = [
     #     MagicMock(json=MagicMock(return_value=NFL_API_GAME_RESPONSE)),
     #     MagicMock(json=MagicMock(return_value=NFL_API_STANDINGS_RESPONSE)),

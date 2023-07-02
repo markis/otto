@@ -1,0 +1,14 @@
+version: '3.9'
+
+services:
+  otto:
+    image: markis/otto:latest
+    container_name: otto
+    build:
+      context: .
+      dockerfile: Dockerfile
+    entrypoint: sleep infinity
+    env_file:
+      - .env
+    volumes:
+      - ./:/app
