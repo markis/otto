@@ -5,8 +5,7 @@ import praw.exceptions
 import praw.models
 import tinycss2.ast
 import tinycss2.parser
-from discord.ext.commands import Context
-from discord.ext.commands.context import BotT
+from discord import ApplicationContext
 from discord.file import File
 from praw import Reddit
 
@@ -19,7 +18,7 @@ SIDEBAR_CSS_NAME: Final = "h1.redditname"
 logger: Final = logging.getLogger(__name__)
 
 
-async def update_sidebar_image(reddit: Reddit, image_url: str, sr_name: str, ctx: Context[BotT]) -> None:
+async def update_sidebar_image(reddit: Reddit, image_url: str, sr_name: str, ctx: ApplicationContext) -> None:
     image_path = download_image(image_url)
     sr_browns = reddit.subreddit(sr_name)
 
@@ -33,7 +32,7 @@ async def update_sidebar_image(reddit: Reddit, image_url: str, sr_name: str, ctx
     picture = None
     with open(resize_image_path, "rb") as f:
         picture = File(f)
-        await ctx.send(content="Sidebar Updated", file=picture)
+        await ctx.respond(content="Sidebar Updated", file=picture)
 
     # delete the image
     delete_file(resize_image_path)
