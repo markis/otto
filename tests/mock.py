@@ -5,7 +5,7 @@ from collections.abc import Callable
 from typing import Any
 from unittest.mock import Mock
 
-from praw import Reddit
+from asyncpraw.reddit import Reddit
 
 OTTO_CONFIG_PATH = "ottograhaminator"
 OTTO_CONFIG = """

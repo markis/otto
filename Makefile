@@ -1,15 +1,10 @@
 .PHONY: build
-build: venv pre-commit
-	@pip install .
-	@python setup.py build
+build: venv
+	@python -m build
 
 .PHONY: lint
-lint: pre-commit
+lint: venv
 	@ruff check .
-
-.PHONY: pre-commit
-pre-commit:
-	@command -v ruff >/dev/null || pip install ruff
 
 .PHONY: venv
 venv:
@@ -17,14 +12,8 @@ venv:
 	@source venv/bin/activate
 	@pip install '.[dev]' 
 
-.PHONY: test-drone
-test-ci:
-	@pip install '.[dev]' 
-	@make test
-
 .PHONY: test
-test:
-	@command -v coverage >/dev/null || pip install coverage
+test: venv
 	@python -m pytest tests/*_test.py
 
 .PHONY: clean

@@ -25,7 +25,23 @@ RUN --mount=type=cache,target=/var/lib/apt/lists \
     --mount=type=cache,target=/var/cache \
     --mount=type=tmpfs,target=/var/log \
     apt-get update && \
-    apt-get install -y imagemagick build-essential cmake gcc ninja-build
+    apt-get install -y imagemagick build-essential cmake gcc ninja-build \
+      libharfbuzz-dev \
+      libfreetype6 \
+      fonts-freefont-ttf \
+      libasound2 \
+      libxcomposite1 \
+      libxdamage1 \
+      libxfixes3 \
+      libxrandr2 \
+      libxtst6 \
+      libatk1.0-0 \
+      libdbus-glib-1-2 \
+      libdbus-1-3 \
+      libx11-xcb1 \
+      libxcursor1 \
+      libxi6 \
+      libgtk-3-0
 
 ENV PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PIP_DISABLE_ROOT_WARNING=1 \
@@ -35,3 +51,5 @@ ENV PIP_DISABLE_PIP_VERSION_CHECK=1 \
 RUN --mount=type=cache,target=/var/cache \
     --mount=from=base,src=/app/dist/,target=/tmp \
     pip install /tmp/*.whl
+
+RUN playwright install firefox

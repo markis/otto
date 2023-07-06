@@ -7,6 +7,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      platforms: 
+        - linux/amd64
     entrypoint: sleep infinity
     env_file:
       - .env

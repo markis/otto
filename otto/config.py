@@ -2,7 +2,9 @@ from dataclasses import dataclass
 from datetime import timedelta
 from typing import Final
 
-from praw import Reddit
+from asyncpraw.models.reddit.subreddit import Subreddit, SubredditWiki
+from asyncpraw.models.reddit.wikipage import WikiPage
+from asyncpraw.reddit import Reddit
 from yaml import Loader, load
 
 OTTO_CONFIG_PATH: Final = "ottograhaminator"
@@ -57,9 +59,11 @@ def _convert_to_timedelta(val: str | int | bool | None) -> timedelta:
     return timedelta(seconds=0)
 
 
-def get_config(reddit: Reddit, subreddit_name: str) -> Config:
-    sr = reddit.subreddit(subreddit_name)
-    wiki_page = sr.wiki[OTTO_CONFIG_PATH]
-    config_doc = wiki_page.content_md
+async def get_config(reddit: Reddit, subreddit_name: str) -> Config:
+    sr: Subreddit = await reddit.subreddit(subreddit_name)
+    wiki: SubredditWiki = sr.wiki
+    assert isinstance(wiki, SubredditWiki)
+    wikipage: WikiPage = await wiki.get_page(OTTO_CONFIG_PATH)
+    config_doc: str = wikipage.content_md
     config_values = load(config_doc, Loader=Loader)
     return Config.from_dict(config_values)

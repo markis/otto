@@ -1,34 +1,40 @@
+import asyncio
 import datetime
 import logging
-import threading
+from typing import Final
 
-from praw import Reddit
+from asyncpraw.reddit import Reddit
 
 from otto import SUBREDDIT_NAME, get_reddit
 from otto.config import Config, get_config
 from otto.lib.nfl_client import NFLClient
 from otto.lib.update_downvote import update_downvote
 from otto.lib.update_sidebar_score import update_sidebar_score
+from otto.utils import repeat
 
-logger = logging.getLogger(__name__)
-
-
-def main(reddit: Reddit = get_reddit(), sr_name: str = SUBREDDIT_NAME) -> None:
-    config = get_config(reddit, sr_name)
-
-    run_jobs(config, reddit)
+logger: Final = logging.getLogger(__name__)
 
 
-def run_jobs(
+async def run() -> None:
+    async with get_reddit() as reddit:
+        await main(reddit, sr_name=SUBREDDIT_NAME)
+
+
+async def main(reddit: Reddit, sr_name: str = SUBREDDIT_NAME) -> None:
+    config = await get_config(reddit, sr_name)
+
+    async def _run_jobs() -> None:
+        async with get_reddit() as reddit:
+            await run_jobs(config, reddit, sr_name)
+
+    await repeat(300, _run_jobs)
+
+
+async def run_jobs(
     config: Config,
-    reddit: Reddit = get_reddit(),
-    sr_name: str = SUBREDDIT_NAME,
-    timer: type[threading.Timer] = threading.Timer,
+    reddit: Reddit,
+    sr_name: str,
 ) -> None:
-    def _run_jobs() -> None:
-        run_jobs(config, reddit, sr_name, timer)
-
-    timer(300, _run_jobs).start()
     logger.info(f"Running Jobs: {datetime.datetime.now()}")
     client = NFLClient()
     games = client.get_scores()
@@ -36,16 +42,16 @@ def run_jobs(
 
     if config.enable_automatic_sidebar_scores:
         try:
-            update_sidebar_score(config, reddit, sr_name, games, records)
+            await update_sidebar_score(config, reddit, sr_name, games, records)
         except Exception as e:
             logger.exception(e)
 
     if config.enable_automatic_downvotes:
         try:
-            update_downvote(config, reddit, sr_name, games)
+            await update_downvote(config, reddit, sr_name, games)
         except Exception as e:
             logger.exception(e)
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(run())

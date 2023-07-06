@@ -1,37 +1,56 @@
 import html
 import re
+from typing import Any
 
-import twitter
+from playwright.async_api import async_playwright
 
-from otto import TWITTER_KEY, TWITTER_SECRET
+from otto import TWITTER_AUTH_COOKIE
 
-twitter_status_url_re = re.compile(r"^https?:\/\/(mobile.)?twitter\.com\/(?:#!\/)?(\w+)\/status(es)?\/(\d+)")
+twitter_status_url_re = re.compile(r".*https?:\/\/(mobile.)?twitter\.com\/(?:#!\/)?(\w+)\/status(es)?\/(\d+).*")
 truncated_tweet_re = re.compile(r"(.*?)(\…?\s*)https:\/\/t.co\/.*?$")
 
-
-def get_status(status_id: int) -> twitter.models.Status:
-    if not TWITTER_KEY or not TWITTER_SECRET:
-        raise ValueError(f"TWITTER_KEY: {TWITTER_KEY}, TWITTER_SECRET: {TWITTER_SECRET}")
-
-    api = twitter.Api(
-        consumer_key=TWITTER_KEY.encode("utf8"),
-        consumer_secret=TWITTER_SECRET.encode("utf8"),
-        application_only_auth=True,
-    )
-    return api.GetStatus(status_id)
-
-
-def get_status_id(url: str) -> int | None:
-    match = twitter_status_url_re.match(url)
-    if not match:
-        return None
-
-    return int(match[4])
+COOKIES: list[Any] = [
+    {
+        "name": "auth_token",
+        "value": TWITTER_AUTH_COOKIE,
+        "domain": ".twitter.com",
+        "path": "/",
+        "httpOnly": True,
+        "secure": True,
+    },
+]
 
 
-def get_tweet_from_status(status: twitter.models.Status) -> str:
-    tweet = html.unescape(status.text).replace("\n", " ").replace("  ", " ")
-    match = truncated_tweet_re.match(tweet)
-    if match:
-        tweet = match[1]
-    return str(tweet)
+def text_contains_twitter_status_url(text: str) -> tuple[bool, int | None, str | None]:
+    matches = twitter_status_url_re.search(text)
+    if matches:
+        return True, int(matches[4]), matches[2]
+    else:
+        return False, None, None
+
+
+def get_tweet_url(status_id: int, author: str = "anyuser") -> str:
+    return f"https://twitter.com/{author}/status/{status_id}"
+
+
+def clean_tweet(tweet: str) -> str:
+    return html.unescape(tweet).replace("\n", " ").replace("  ", " ")
+
+
+async def get_tweet_text(status_id: int, author: str = "anyuser") -> str:
+    async with async_playwright() as p:
+        browser = await p.firefox.launch()
+        context = await browser.new_context()
+        await context.add_cookies(COOKIES)
+        page = await context.new_page()
+        await page.goto(f"https://twitter.com/{author}/status/{status_id}")
+        await page.wait_for_selector("article")
+        element = page.get_by_test_id("tweetText")
+        assert element, "Tweet text element not found, div['data-testid=\"tweetText\"']"
+        text = await element.first.text_content()
+        await browser.close()
+        if text:
+            text = clean_tweet(text)
+        else:
+            text = ""
+        return str(text)
