@@ -7,7 +7,7 @@ on:
       - master
 
 env:
-  PLATFORMS: linux/arm/v7
+  PLATFORMS: linux/amd64
   IMAGE_NAME: markis/otto
 
 jobs:

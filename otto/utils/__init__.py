@@ -1,7 +1,9 @@
+import asyncio
 import os
 import tempfile
 import urllib.parse
 import urllib.request
+from collections.abc import Callable, Coroutine
 from datetime import datetime
 
 import pytz
@@ -69,5 +71,18 @@ def get_url_age(url: str) -> datetime:
     return convert_httpstring(lm)
 
 
-def delete_file(file_path: str) -> None:
+async def delete_file(file_path: str) -> None:
     os.remove(file_path)
+
+
+async def repeat(interval: float, func: Callable[[], Coroutine[None, None, None]]) -> None:
+    """Run func every interval seconds.
+
+    If func has not finished before *interval*, will run again
+    immediately when the previous iteration finished.
+    """
+    while True:
+        await asyncio.gather(
+            func(),
+            asyncio.sleep(interval),
+        )

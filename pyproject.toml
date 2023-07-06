@@ -11,12 +11,12 @@ authors = [
 description = "OttoGrahaminator"
 requires-python = ">=3.11,<4"
 dependencies = [
+  "asyncpraw==7.7.0",
   "fuzzywuzzy[speedup]==0.18.0",
-  "praw==7.7.0",
+  "playwright==1.35.0",
   "py-cord==2.4.1",
   "pytz==2023.3",
   "PyYAML==6.0",
-  "python-twitter==3.5",
   "pytimeparse==1.1.8",
   "tinycss2==1.2.1",
   "wand==0.6.11",

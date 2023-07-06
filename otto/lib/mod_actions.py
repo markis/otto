@@ -1,32 +1,32 @@
 import logging
-from collections.abc import Callable
+from typing import Final
 
-from praw import Reddit
-from praw.exceptions import APIException
+from asyncpraw.exceptions import APIException
+from asyncpraw.models.reddit.redditor import Redditor
+from asyncpraw.models.reddit.rules import Rule
+from asyncpraw.models.reddit.subreddit import Subreddit
+from asyncpraw.reddit import Reddit
 
 from otto.types import SendMessage
 
-logger = logging.getLogger(__name__)
+logger: Final = logging.getLogger(__name__)
 
 
-def is_mod(reddit: Reddit, sr_name: str, user_name: str) -> bool:
-    sr = reddit.subreddit(sr_name)
-    rel = sr.moderator(user_name)
-    return len(rel.children) > 0
+async def is_mod(reddit: Reddit, sr_name: str, user_name: str) -> bool:
+    sr: Subreddit = await reddit.subreddit(sr_name)
+    return any(mod for mod in await sr.moderator(user_name) if isinstance(mod, Redditor) and mod.name == user_name)
 
 
-def get_rule(reddit: Reddit, sr_name: str, rule_num: int) -> str:
-    sr = reddit.subreddit(sr_name)
-    rules = sr.rules()["rules"]
-    rule_short_name = rules[rule_num - 1]["short_name"]
-    assert isinstance(rule_short_name, str)
-    return rule_short_name
+async def get_rule(reddit: Reddit, sr_name: str, rule_num: int) -> str:
+    sr: Subreddit = await reddit.subreddit(sr_name)
+    rule: Rule = await sr.rules.get_rule(rule_num)
+    return str(rule.short_name)
 
 
-def ban_user(
+async def ban_user(
     reddit: Reddit,
     sr_name: str,
-    send_message: Callable[[str], None],
+    send_message: SendMessage,
     mod_name: str,
     user_name: str,
     rule_violation: int | None,
@@ -38,14 +38,14 @@ def ban_user(
         user_name = user_name[2:]
 
     logger.info(f"{mod_name} banned {user_name}")
-    sr = reddit.subreddit(sr_name)
+    sr = await reddit.subreddit(sr_name)
 
     ban_reason = ""
     if rule_violation and rule_violation > 0:
-        ban_reason = get_rule(reddit, sr_name, rule_violation)
+        ban_reason = await get_rule(reddit, sr_name, rule_violation)
 
     try:
-        sr.banned.add(
+        await sr.banned.add(
             user_name,
             ban_reason=ban_reason,
             ban_message=ban_message,
@@ -53,22 +53,22 @@ def ban_user(
             note=note,
         )
     except APIException as e:
-        send_message(f"Ban failed because: {e.message}")
+        await send_message(f"Ban failed because: {e.message}")
         return
 
     ban_duration = "permanently"
     if duration:
         ban_duration = f"for {duration} days"
 
-    send_message(f'u/{user_name} has been banned {ban_duration} for violating "{ban_reason}"')
+    await send_message(f'u/{user_name} has been banned {ban_duration} for violating "{ban_reason}"')
 
 
-def set_link_type(reddit: Reddit, sr_name: str, link_type: str) -> str:
+async def set_link_type(reddit: Reddit, sr_name: str, link_type: str) -> str:
     assert reddit
     assert sr_name
     assert link_type in ["any", "link", "self"]
 
-    sr = reddit.subreddit(sr_name)
+    sr = await reddit.subreddit(sr_name)
     sr.mod.update(link_type=link_type)
 
     responses = {
@@ -80,10 +80,10 @@ def set_link_type(reddit: Reddit, sr_name: str, link_type: str) -> str:
 
 
 async def enable_text_posts(reddit: Reddit, sr_name: str, send_message: SendMessage) -> None:
-    result = set_link_type(reddit, sr_name, "any")
+    result = await set_link_type(reddit, sr_name, "any")
     await send_message(result)
 
 
 async def disable_text_posts(reddit: Reddit, sr_name: str, send_message: SendMessage) -> None:
-    result = set_link_type(reddit, sr_name, "link")
+    result = await set_link_type(reddit, sr_name, "link")
     await send_message(result)

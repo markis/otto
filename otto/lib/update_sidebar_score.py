@@ -2,7 +2,7 @@ import re
 from datetime import datetime
 from typing import Any
 
-import praw
+from asyncpraw.reddit import Reddit
 
 from otto.config import Config
 from otto.models.game import Game
@@ -121,9 +121,9 @@ def _get_records(records: list[Record]) -> str:
     return "\n".join(standings)
 
 
-def update_sidebar_score(
+async def update_sidebar_score(
     config: Config,
-    reddit: praw.Reddit,
+    reddit: Reddit,
     sr_name: str,
     games: list[Game],
     records: list[Record],
@@ -132,7 +132,7 @@ def update_sidebar_score(
     standings = _get_records(records)
 
     # Update old reddit
-    sr_browns = reddit.subreddit(sr_name)
+    sr_browns = await reddit.subreddit(sr_name)
     settings = sr_browns.mod.settings()
 
     desc = settings["description"]

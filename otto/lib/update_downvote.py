@@ -1,8 +1,10 @@
 from datetime import datetime
 from typing import Final
 
-import praw
-from praw.reddit import Subreddit
+from asyncpraw.const import API_PATH
+from asyncpraw.models.reddit.subreddit import Subreddit, SubredditStylesheet
+from asyncpraw.models.stylesheet import Stylesheet
+from asyncpraw.reddit import Reddit
 
 from otto.config import Config
 from otto.models.game import Game, get_last_game, get_next_game
@@ -23,8 +25,8 @@ DOWNVOTE_VOTED_TOKEN: Final = "%%teamsmall%%"
 DOWNVOTE_VOTED: Final = ".arrow.downmod"
 
 
-def update_downvote(config: Config, reddit: praw.Reddit, sr_name: str, games: list[Game]) -> None:
-    sr = reddit.subreddit(sr_name)
+async def update_downvote(config: Config, reddit: Reddit, sr_name: str, games: list[Game]) -> None:
+    sr = await reddit.subreddit(sr_name)
     next_game = get_next_game(games, config.downvotes_delay)
     last_game = get_last_game(games, config.downvotes_delay)
     assert next_game
@@ -35,14 +37,14 @@ def update_downvote(config: Config, reddit: praw.Reddit, sr_name: str, games: li
     last_game_datetime = last_game.game_time
 
     # Update old reddit
-    update_old_downvote(sr, next_abbr)
+    await update_old_downvote(sr, next_abbr)
 
     # Update new reddit
-    update_new_downvote(reddit, sr, next_abbr, last_game_datetime)
+    await update_new_downvote(reddit, sr, next_abbr, last_game_datetime)
 
 
-def update_new_downvote(
-    reddit: praw.Reddit,
+async def update_new_downvote(
+    reddit: Reddit,
     sr: Subreddit,
     next_abbr: str,
     last_game_datetime: datetime,
@@ -50,7 +52,7 @@ def update_new_downvote(
     assert sr, "`sr` wasn't specified"
     assert next_abbr, "`next_abbr` wasn't specified"
 
-    data = reddit.get(praw.const.API_PATH["structured_styles"].format(subreddit=sr))
+    data = await reddit.get(API_PATH["structured_styles"].format(subreddit=sr))
 
     current_downvote_icon_inactive_age = get_url_age(data["data"]["style"]["postDownvoteIconInactive"])
 
@@ -72,13 +74,13 @@ def update_new_downvote(
         )
 
 
-def update_old_downvote(sr: Subreddit, team: str) -> None:
+async def update_old_downvote(sr: Subreddit, team: str) -> None:
     assert sr, "`sr` wasn't specified"
     assert team, "`team` wasn't specified"
 
-    sr_stylesheet = sr.stylesheet
-    styles = sr_stylesheet.__call__()
-    css = styles.stylesheet
+    sr_stylesheet: SubredditStylesheet = sr.stylesheet()
+    styles = await sr_stylesheet()
+    css: str = styles.stylesheet
 
     parsed = parse_stylesheet(css)
     rules = find_all_rules_by_classes({DOWNVOTE_UNVOTED, DOWNVOTE_VOTED}, parsed)
@@ -102,4 +104,4 @@ def update_old_downvote(sr: Subreddit, team: str) -> None:
             background_image[0].value = DOWNVOTE_VOTED_TOKEN
 
     updated_css = serialize_stylesheet(parsed)
-    sr_stylesheet.update(updated_css)
+    await sr_stylesheet.update(updated_css)

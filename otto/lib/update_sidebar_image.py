@@ -1,13 +1,13 @@
 import logging
 from typing import Final
 
-import praw.exceptions
-import praw.models
 import tinycss2.ast
 import tinycss2.parser
+from asyncpraw import Reddit
+from asyncpraw.models.reddit.subreddit import Subreddit
+from asyncpraw.models.reddit.widgets import ImageWidget, SubredditWidgets
 from discord import ApplicationContext
 from discord.file import File
-from praw import Reddit
 
 from otto.utils import delete_file, download_image
 from otto.utils.image import resize_image
@@ -20,13 +20,13 @@ logger: Final = logging.getLogger(__name__)
 
 async def update_sidebar_image(reddit: Reddit, image_url: str, sr_name: str, ctx: ApplicationContext) -> None:
     image_path = download_image(image_url)
-    sr_browns = reddit.subreddit(sr_name)
+    sr_browns = await reddit.subreddit(sr_name)
 
     resize_image_path, width, height = resize_image(image_path)
-    update_new_reddit_sidebar_image(sr_browns, resize_image_path, width, height)
-    update_old_reddit_sidebar_image(sr_browns, resize_image_path, width, height)
+    await update_new_reddit_sidebar_image(sr_browns, resize_image_path, width, height)
+    await update_old_reddit_sidebar_image(sr_browns, resize_image_path, width, height)
 
-    delete_file(image_path)
+    await delete_file(image_path)
 
     # add the image to final update
     picture = None
@@ -35,16 +35,16 @@ async def update_sidebar_image(reddit: Reddit, image_url: str, sr_name: str, ctx
         await ctx.respond(content="Sidebar Updated", file=picture)
 
     # delete the image
-    delete_file(resize_image_path)
+    await delete_file(resize_image_path)
 
 
-def update_new_reddit_sidebar_image(sr: praw.models.Subreddit, image_path: str, width: int, height: int) -> None:
-    widgets: praw.models.SubredditWidgets = sr.widgets
+async def update_new_reddit_sidebar_image(sr: Subreddit, image_path: str, width: int, height: int) -> None:
+    widgets: SubredditWidgets = await sr.widgets
     image_url = widgets.mod.upload_image(image_path)
     image_dicts = [{"width": width, "height": height, "linkUrl": "", "url": image_url}]
 
-    for widget in widgets.sidebar:
-        if isinstance(widget, praw.models.ImageWidget):
+    for widget in await widgets.sidebar():
+        if isinstance(widget, ImageWidget):
             widget.mod.update(data=image_dicts)
             break
 
@@ -83,7 +83,7 @@ def _update_size_token(rule: tinycss2.ast.QualifiedRule, identity: str, represen
             return
 
 
-def update_old_reddit_sidebar_image(sr: praw.models.Subreddit, image_path: str, width: int, height: int) -> None:
+async def update_old_reddit_sidebar_image(sr: Subreddit, image_path: str, width: int, height: int) -> None:
     # Update old Reddit
 
     sr_stylesheet = sr.stylesheet
