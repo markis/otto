@@ -2,7 +2,7 @@ import logging
 import sys
 import tempfile
 from random import choice
-from typing import Any, Final
+from typing import Final
 
 import discord
 from discord.user import User

@@ -14,18 +14,18 @@ class Timer:
 
     @property
     def elapsed(self) -> float:
-        return self.__elapsed
+        return self._elapsed
 
     def __enter__(self) -> Timer:
-        self.__start
+        self._start
         return self
 
     def __exit__(self, *_: Any) -> None:
         self.stop()
 
     def start(self) -> None:
-        self.__start = time.time()
+        self._start = time.time()
 
     def stop(self) -> None:
-        self.__end = time.time()
-        self.__elapsed = self.__end - self.__start
+        self._end = time.time()
+        self._elapsed = self._end - self._start

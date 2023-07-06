@@ -3,7 +3,6 @@ from typing import Final
 
 from asyncpraw.const import API_PATH
 from asyncpraw.models.reddit.subreddit import Subreddit, SubredditStylesheet
-from asyncpraw.models.stylesheet import Stylesheet
 from asyncpraw.reddit import Reddit
 
 from otto.config import Config
