@@ -38,7 +38,7 @@ logging.basicConfig(stream=sys.stdout, level=logging.INFO)
 logger: Final = logging.getLogger(__name__)
 
 
-class OttoReddit:
+class AsyncGenReddit:
     def __init__(self) -> None:
         self.reddit = Reddit(
             client_id=REDDIT_CLIENT_ID,
@@ -55,5 +55,5 @@ class OttoReddit:
         await self.reddit.close()
 
 
-def get_reddit() -> OttoReddit:
-    return OttoReddit()
+def get_reddit() -> AsyncGenReddit:
+    return AsyncGenReddit()
