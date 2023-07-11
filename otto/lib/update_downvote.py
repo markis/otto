@@ -1,6 +1,7 @@
 from datetime import datetime
-from typing import Final
+from typing import Final, cast
 
+import tinycss2.ast
 from asyncpraw.const import API_PATH
 from asyncpraw.models.reddit.subreddit import Subreddit, SubredditStylesheet
 from asyncpraw.reddit import Reddit
@@ -25,6 +26,7 @@ DOWNVOTE_VOTED: Final = ".arrow.downmod"
 
 
 async def update_downvote(config: Config, reddit: Reddit, sr_name: str, games: list[Game]) -> None:
+    """Update the downvote arrow."""
     sr = await reddit.subreddit(sr_name)
     next_game = get_next_game(games, config.downvotes_delay)
     last_game = get_last_game(games, config.downvotes_delay)
@@ -48,6 +50,7 @@ async def update_new_downvote(
     next_abbr: str,
     last_game_datetime: datetime,
 ) -> None:
+    """Update the downvote arrow on new Reddit."""
     assert sr, "`sr` wasn't specified"
     assert next_abbr, "`next_abbr` wasn't specified"
 
@@ -62,18 +65,22 @@ async def update_new_downvote(
         active_image_path = get_small_icon_path(next_abbr)
         inactive_image_path = get_small_bw_icon_path(next_abbr)
 
-        active_down_url = sr.stylesheet._upload_style_asset(active_image_path, "postDownvoteIconActive")
-        inactive_down_url = sr.stylesheet._upload_style_asset(inactive_image_path, "postDownvoteIconInactive")
-        sr.stylesheet._update_structured_styles(
+        active_down_url = sr.stylesheet._upload_style_asset(active_image_path, "postDownvoteIconActive")  # noqa: SLF001
+        inactive_down_url = sr.stylesheet._upload_style_asset(  # noqa: SLF001
+            inactive_image_path,
+            "postDownvoteIconInactive",
+        )
+        sr.stylesheet._update_structured_styles(  # noqa: SLF001
             {
                 "postVoteIcons": "custom",
                 "postDownvoteIconActive": active_down_url,
                 "postDownvoteIconInactive": inactive_down_url,
-            }
+            },
         )
 
 
 async def update_old_downvote(sr: Subreddit, team: str) -> None:
+    """Update the downvote arrow on old Reddit."""
     assert sr, "`sr` wasn't specified"
     assert team, "`team` wasn't specified"
 
@@ -86,21 +93,13 @@ async def update_old_downvote(sr: Subreddit, team: str) -> None:
 
     for rule in rules:
         identity = get_identity(rule)
-        if identity == DOWNVOTE_UNVOTED:
+        if identity in (DOWNVOTE_UNVOTED, DOWNVOTE_VOTED):
             background_position = get_token_value_by_ident(rule, "background-position")
-            background_position[0].representation = str(0)
-            background_position[1].representation = str(get_position(team))
+            cast(tinycss2.ast.StringToken, background_position[0]).representation = "0"
+            cast(tinycss2.ast.StringToken, background_position[1]).representation = str(get_position(team))
 
             background_image = get_token_value_by_ident(rule, "background-image")
-            background_image[0].value = DOWNVOTE_UNVOTED_TOKEN
-
-        elif identity == DOWNVOTE_VOTED:
-            background_position = get_token_value_by_ident(rule, "background-position")
-            background_position[0].representation = str(0)
-            background_position[1].representation = str(get_position(team))
-
-            background_image = get_token_value_by_ident(rule, "background-image")
-            background_image[0].value = DOWNVOTE_VOTED_TOKEN
+            cast(tinycss2.ast.StringToken, background_image[0]).value = DOWNVOTE_UNVOTED_TOKEN
 
     updated_css = serialize_stylesheet(parsed)
     await sr_stylesheet.update(updated_css)

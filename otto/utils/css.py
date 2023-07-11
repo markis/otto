@@ -4,51 +4,36 @@ import tinycss2.ast
 import tinycss2.parser
 
 
-def parse_stylesheet(css: str) -> list[tinycss2.ast.QualifiedRule]:
-    return cast(list[tinycss2.ast.QualifiedRule], tinycss2.parser.parse_stylesheet(css))
+def parse_stylesheet(css: str) -> list[tinycss2.ast.Node]:
+    """Parse a stylesheet."""
+    return cast(list[tinycss2.ast.Node], tinycss2.parser.parse_stylesheet(css))
 
 
-def serialize_stylesheet(parsed: list[tinycss2.ast.QualifiedRule]) -> str:
+def serialize_stylesheet(parsed: list[tinycss2.ast.Node]) -> str:
+    """Serialize a stylesheet."""
     return "".join([rule.serialize() for rule in parsed])
 
 
-def get_identity(rule: tinycss2.ast.QualifiedRule) -> str:
-    assert isinstance(rule, tinycss2.ast.QualifiedRule)
-    return "".join([token.value for token in rule.prelude if hasattr(token, "value")]).strip()
-
-
-# def find_rule_by_class(css_class: str, parsed: list):
-#   for rule in parsed:
-#     if isinstance(rule, tinycss2.ast.QualifiedRule):
-#       identity = get_identity(rule)
-#       if identity == css_class:
-#         return rule
-#   return None
-
-# def find_all_rules_by_class(css_class: str, parsed: list):
-#   result = []
-#   for rule in parsed:
-#     if isinstance(rule, tinycss2.ast.QualifiedRule):
-#       identity = get_identity(rule)
-#       if identity == css_class:
-#         result.append(rule)
-#   return result
+def get_identity(rule: tinycss2.ast.Node) -> str:
+    """Get the identity of a rule."""
+    qual_rule = cast(tinycss2.ast.QualifiedRule, rule)
+    return "".join([token.value for token in qual_rule.prelude if hasattr(token, "value")]).strip()
 
 
 def find_all_rules_by_classes(
-    css_classes: set[str], parsed: list[tinycss2.ast.QualifiedRule]
-) -> list[tinycss2.ast.QualifiedRule]:
-    result = []
-    for rule in parsed:
-        if isinstance(rule, tinycss2.ast.QualifiedRule):
-            identity = get_identity(rule)
-            if identity in css_classes:
-                result.append(rule)
-    return result
+    css_classes: set[str],
+    parsed: list[tinycss2.ast.Node],
+) -> list[tinycss2.ast.Node]:
+    """Find all rules by classes."""
+    return [
+        rule for rule in parsed if isinstance(rule, tinycss2.ast.QualifiedRule) and get_identity(rule) in css_classes
+    ]
 
 
-def get_token_value_by_ident(rule: tinycss2.ast.QualifiedRule, ident: str) -> list[tinycss2.ast.QualifiedRule]:
-    result_tokens = []
+def get_token_value_by_ident(rule_node: tinycss2.ast.Node, ident: str) -> list[tinycss2.ast.Node]:
+    """Get the value of a token by its ident."""
+    rule = cast(tinycss2.ast.QualifiedRule, rule_node)
+    result_tokens: list[tinycss2.ast.Node] = []
     record_next_tokens = False
     for token in rule.content:
         if not record_next_tokens and isinstance(token, tinycss2.ast.IdentToken) and token.value == ident:

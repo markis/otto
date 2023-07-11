@@ -10,11 +10,11 @@ lint: venv
 venv:
 	@test -d venv || python3 -m venv venv
 	@source venv/bin/activate
-	@pip install '.[dev]' 
+	@pip install '.[dev]'
 
 .PHONY: test
 test: venv
-	@python -m pytest tests/*_test.py
+	@python -m pytest
 
 .PHONY: clean
 clean:

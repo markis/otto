@@ -1,7 +1,10 @@
 import asyncio
 from datetime import datetime, timedelta
+from textwrap import dedent
+from typing import Final
 
-from otto import TEAM_NAME
+from otto import logger as root_logger
+from otto.constants import TEAM_NAME
 from otto.lib.nfl_client import NFLClient
 from otto.lib.weather_client import WeatherClient
 from otto.models.game import get_next_game
@@ -16,12 +19,13 @@ standings_header = """
 |:-----:|:-----:|:------:|:------:|:------:|:------:|:------:|
 """
 
+logger: Final = root_logger.getChild("lib.game_thread")
+
 
 def _maybe_add_tie(tie: int) -> str:
     if tie > 0:
         return f"-{tie}"
-    else:
-        return ""
+    return ""
 
 
 def _get_standings_table(nfl_client: NFLClient, team: str, opponent: str) -> str:
@@ -39,8 +43,8 @@ def _get_standings_table(nfl_client: NFLClient, team: str, opponent: str) -> str
                 {record.division_win}-{record.division_loss}{_maybe_add_tie(record.division_tie)} |
                 {record.conference_win}-{record.conference_loss}{_maybe_add_tie(record.conference_tie)} |
                 {record.streak} |
-            """.split()
-            )
+            """.split(),
+            ),
         )
     return standings_header + "\n".join(standings_rows)
 
@@ -51,20 +55,21 @@ def _get_weather(team_abbr: str, game_time: datetime) -> str:
         w = weather_client.get_weather(lat, lon, game_time)
         if w:
             return f"{w.temperature}° - {w.forecast} - Wind {w.wind_direction} {w.wind_speed}"
-    except BaseException:
-        pass
+    except Exception:
+        logger.exception("Error getting weather")
 
     return ""
 
 
 async def _default_send_message(msg: str) -> None:
-    """Default send_message will just print to console"""
-    print(msg)
+    """Print to console."""
+    logger.info(msg)
 
 
 async def generate_game_thread(
     send_message: SendMessage = _default_send_message,
 ) -> None:
+    """Generate a game thread."""
     nfl_client = NFLClient()
     games = nfl_client.get_scores()
 
@@ -76,10 +81,6 @@ async def generate_game_thread(
     next_team = next_game.opponent
     next_abbr = next_team.abbr
     next_location_abbr = team_abbr if next_game.at_home else next_abbr
-
-    # game_data = nfl_client.get_game(next_game.id)
-    # game_detail_id = game_data["gameDetailId"]
-    # details = nfl_client.get_game_details(game_detail_id)
 
     standings_table = _get_standings_table(nfl_client, team_abbr, next_abbr)
     weather_forecast = _get_weather(next_location_abbr, next_game.game_time)
@@ -107,54 +108,56 @@ async def generate_game_thread(
     season_type = next_game.season_type
 
     game_thread_text = f"""
-|[](/browns2)|
-|:-----:|
-|**BEHAVE YOURSELVES AND REPORT ANYTHING THAT BREAKS THE RULES.**|
-|**FANS OF OTHER TEAMS PLEASE SELECT A FLAIR**|
+        |[](/browns2)|
+        |:-----:|
+        |**BEHAVE YOURSELVES AND REPORT ANYTHING THAT BREAKS THE RULES.**|
+        |**FANS OF OTHER TEAMS PLEASE SELECT A FLAIR**|
 
-----
+        ----
 
-{standings_table}
+        {standings_table}
 
-----
+        ----
 
-||Game Info|
-|:-----:|:-----:|:------:|:------:|
-|**Location**|{next_game.venue_name}|
-|**When**| Sunday {get_time(next_game.game_time)}|
-|**Weather**|{weather_forecast}|
-|**Radio**| [Local Radio Link - 92.3 THE FAN](https://player.radio.com/listen/station/923-the-fan), ESPN 850
-|**TV Network**| {", ".join(next_game.networks)}
-|**TV Coverage**| [Map](https://506sports.com/nfl.php?yr={season}&wk={next_game.week})|
-|**Commentary**|??|
-|**NFL** |[Game Center](https://www.nfl.com/games/{next_team.name}-at-{team_name}-{season}-{season_type}-{next_game.week})|
+        ||Game Info|
+        |:-----:|:-----:|:------:|:------:|
+        |**Location**|{next_game.venue_name}|
+        |**When**| Sunday {get_time(next_game.game_time)}|
+        |**Weather**|{weather_forecast}|
+        |**Radio**| [Local Radio Link - 92.3 THE FAN](https://player.radio.com/listen/station/923-the-fan), ESPN 850
+        |**TV Network**| {", ".join(next_game.networks)}
+        |**TV Coverage**| [Map](https://506sports.com/nfl.php?yr={season}&wk={next_game.week})|
+        |**Commentary**|??|
+        |**NFL** |[Game Center](https://www.nfl.com/games/{next_team.name}-at-{team_name}-{season}-{season_type}-{next_game.week})|
 
-----
+        ----
 
-|Team|Starting QB|
-|:-----:|:-----:|
-|[{next_team.name}]({next_subreddit})|??|
-|[{team_name}]({team_subreddit})|??|
+        |Team|Starting QB|
+        |:-----:|:-----:|
+        |[{next_team.name}]({next_subreddit})|??|
+        |[{team_name}]({team_subreddit})|??|
 
-----
+        ----
 
-||{season} [{next_team.name}]({next_subreddit}) Leaders|{season} [{team_name}]({team_subreddit}) Leaders|
-|:-----:|:-----:|:------:|
-|**Passing**|{next_pass_lead}|{team_pass_lead}|
-|**Rushing**|{next_rush_lead}|{team_rush_lead}|
-|**Receiving**|{next_rec_lead}|{team_rec_lead}|
-|**Tackles**|{next_tack_lead}|{team_tack_lead}|
-|**Interceptions**|{next_int_lead}|{team_int_lead}|
-|**Sacks**|{next_sack_lead}|{team_sack_lead}|
+        ||{season} [{next_team.name}]({next_subreddit}) Leaders|{season} [{team_name}]({team_subreddit}) Leaders|
+        |:-----:|:-----:|:------:|
+        |**Passing**|{next_pass_lead}|{team_pass_lead}|
+        |**Rushing**|{next_rush_lead}|{team_rush_lead}|
+        |**Receiving**|{next_rec_lead}|{team_rec_lead}|
+        |**Tackles**|{next_tack_lead}|{team_tack_lead}|
+        |**Interceptions**|{next_int_lead}|{team_int_lead}|
+        |**Sacks**|{next_sack_lead}|{team_sack_lead}|
     """
+    game_thread_text = dedent(game_thread_text)
 
     message = f"""
-*Body*
-```{game_thread_text}```
+        *Body*
+        ```{game_thread_text}```
 
-*Title*
-```{title}```
+        *Title*
+        ```{title}```
     """
+    message = dedent(message)
     await send_message(message)
 
 

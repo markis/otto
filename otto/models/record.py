@@ -1,7 +1,11 @@
+from typing import Self
+
 from otto.models.team import get_abbr
 
 
 class Record:
+    """Represents a team's record."""
+
     abbr: str
 
     win: int
@@ -29,7 +33,8 @@ class Record:
     road_loss: int
     road_tie: int
 
-    def __init__(self, data: dict[str, str]):
+    def __init__(self: Self, data: dict[str, str]) -> None:
+        """Initialize a Record object."""
         self.abbr = get_abbr(data["nickName"])
 
         self.win = int(data["overallWin"])

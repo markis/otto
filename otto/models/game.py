@@ -1,15 +1,22 @@
+from __future__ import annotations
+
 from dataclasses import dataclass
-from datetime import datetime, timedelta
-from typing import Any
+from typing import TYPE_CHECKING, Any, Self
 
-from otto import TEAM_NAME
+from otto.constants import TEAM_NAME
 from otto.models.team import Team
-from otto.utils import convert_isostring, get_now
+from otto.utils import get_now
+from otto.utils.convert import convert_isostring
+
+if TYPE_CHECKING:
+    from datetime import datetime, timedelta
 
 
-@dataclass(frozen=True)
+@dataclass(slots=True, frozen=True, order=False)
 class Game:
-    id: str
+    """A game."""
+
+    game_id: str
     game_detail_id: str | None
     game_time: datetime
     season: str
@@ -27,17 +34,33 @@ class Game:
 
     data: dict[str, Any]
 
+    def __le__(self: Self, other: Self) -> bool:
+        """Return True if this game is less than or equal to the other game."""
+        return self.game_time <= other.game_time
+
+    def __lt__(self: Self, other: Self) -> bool:
+        """Return True if this game is less than the other game."""
+        return self.game_time < other.game_time
+
+    def __ge__(self: Self, other: Self) -> bool:
+        """Return True if this game is greater than or equal to the other game."""
+        return self.game_time >= other.game_time
+
+    def __gt__(self: Self, other: Self) -> bool:
+        """Return True if this game is greater than the other game."""
+        return self.game_time > other.game_time
+
     @property
-    def time_until_game(self) -> timedelta:
-        if self.game_time:
-            return self.game_time - get_now()
-        return datetime(1970, 1, 1) - get_now()
+    def time_until_game(self: Self) -> timedelta:
+        """Return the time until the game."""
+        return self.game_time - get_now()
 
     @classmethod
-    def from_nfl_dict(cls, data: dict[str, Any]) -> "Game":
+    def from_nfl_dict(cls: type[Game], data: dict[str, Any]) -> Game:
+        """Create a game from the NFL API data."""
         assert data
 
-        id = data["id"]
+        game_id = data["id"]
         game_detail_id = data.get("gameDetailId")
         assert "gameTime" in data
         game_time = convert_isostring(data["gameTime"])
@@ -87,7 +110,7 @@ class Game:
             visitor_score = int(visitor_team_score["pointsTotal"])
 
         return cls(
-            id=id,
+            game_id=game_id,
             game_detail_id=game_detail_id,
             game_time=game_time,
             season=season,
@@ -107,9 +130,10 @@ class Game:
 
 
 def get_next_game(games: list[Game], next_opp_delay: timedelta) -> Game | None:
+    """Return the next game."""
     next_game = None
-    games.sort(key=lambda game: game.time_until_game)
-    games_after_delay = [game for game in games if game.time_until_game and next_opp_delay < game.time_until_game]
+    asc_games = sorted(games)
+    games_after_delay = [game for game in asc_games if game.time_until_game and next_opp_delay < game.time_until_game]
     if games_after_delay:
         next_game = games_after_delay[0]
 
@@ -117,9 +141,10 @@ def get_next_game(games: list[Game], next_opp_delay: timedelta) -> Game | None:
 
 
 def get_last_game(games: list[Game], next_opp_delay: timedelta) -> Game | None:
+    """Return the last game."""
     next_game = None
-    games.sort(key=lambda game: game.time_until_game, reverse=True)
-    games_before_delay = [game for game in games if game.time_until_game and next_opp_delay > game.time_until_game]
+    desc_games = sorted(games, reverse=True)
+    games_before_delay = [game for game in desc_games if game.time_until_game and next_opp_delay > game.time_until_game]
     if games_before_delay:
         next_game = games_before_delay[0]
 

@@ -1,4 +1,5 @@
 import logging
+from pathlib import Path
 from typing import Final
 
 import tinycss2.ast
@@ -9,6 +10,7 @@ from asyncpraw.models.reddit.widgets import ImageWidget, SubredditWidgets
 from discord import ApplicationContext
 from discord.file import File
 
+from otto.constants import DEFAULT_IMAGE_HEIGHT, DEFAULT_IMAGE_WIDTH
 from otto.utils import delete_file, download_image
 from otto.utils.image import resize_image
 
@@ -19,6 +21,7 @@ logger: Final = logging.getLogger(__name__)
 
 
 async def update_sidebar_image(reddit: Reddit, image_url: str, sr_name: str, ctx: ApplicationContext) -> None:
+    """Update the sidebar image."""
     image_path = download_image(image_url)
     sr_browns = await reddit.subreddit(sr_name)
 
@@ -30,7 +33,7 @@ async def update_sidebar_image(reddit: Reddit, image_url: str, sr_name: str, ctx
 
     # add the image to final update
     picture = None
-    with open(resize_image_path, "rb") as f:
+    with Path(resize_image_path).open("rb") as f:
         picture = File(f)
         await ctx.respond(content="Sidebar Updated", file=picture)
 
@@ -39,6 +42,7 @@ async def update_sidebar_image(reddit: Reddit, image_url: str, sr_name: str, ctx
 
 
 async def update_new_reddit_sidebar_image(sr: Subreddit, image_path: str, width: int, height: int) -> None:
+    """Update the sidebar image on new Reddit."""
     widgets: SubredditWidgets = await sr.widgets
     image_url = widgets.mod.upload_image(image_path)
     image_dicts = [{"width": width, "height": height, "linkUrl": "", "url": image_url}]
@@ -62,7 +66,7 @@ def _update_background_image_token(rule: tinycss2.ast.QualifiedRule, sidebar_tok
         if isinstance(token, tinycss2.ast.URLToken):
             token.value = sidebar_token
             return
-        elif isinstance(token, tinycss2.ast.FunctionBlock):
+        if isinstance(token, tinycss2.ast.FunctionBlock):
             argument: tinycss2.ast.StringToken = token.arguments[0]
             argument.value = f'"{sidebar_token}"'
             return
@@ -84,8 +88,7 @@ def _update_size_token(rule: tinycss2.ast.QualifiedRule, identity: str, represen
 
 
 async def update_old_reddit_sidebar_image(sr: Subreddit, image_path: str, width: int, height: int) -> None:
-    # Update old Reddit
-
+    """Update the sidebar image on old Reddit."""
     sr_stylesheet = sr.stylesheet
     styles = sr_stylesheet.__call__()
     css = styles.stylesheet
@@ -97,18 +100,19 @@ async def update_old_reddit_sidebar_image(sr: Subreddit, image_path: str, width:
         if isinstance(rule, tinycss2.ast.QualifiedRule):
             identity = "".join([token.value for token in rule.prelude if hasattr(token, "value")]).strip()
             if identity == SIDEBAR_CSS_NAME:
-                width_token_representation = "300"
-                height_token_representation = "400"
-                if width > height and width < 600:
+                width_token_representation = str(DEFAULT_IMAGE_WIDTH)
+                height_token_representation = str(DEFAULT_IMAGE_HEIGHT)
+                if width > height and width < DEFAULT_IMAGE_WIDTH * 2:
                     height_token_representation = str(height)
-                    width_token_representation = "300"
-                elif width > height and width >= 600:
+                    width_token_representation = str(DEFAULT_IMAGE_WIDTH)
+                elif width > height and width >= DEFAULT_IMAGE_WIDTH * 2:
                     height_token_representation = str(int(height / 2))
-                    width_token_representation = "300"
+                    width_token_representation = str(DEFAULT_IMAGE_WIDTH)
 
                 _update_background_image_token(rule, f"%%{SIDEBAR_TOKEN}%%")
                 _update_size_token(rule, "height", height_token_representation)
                 _update_size_token(rule, "width", width_token_representation)
+                break
 
     updated_css = "".join([rule.serialize() for rule in parsed])
     sr_stylesheet.update(updated_css)

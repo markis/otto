@@ -4,7 +4,7 @@ from typing import Any, Final
 
 from playwright.async_api import async_playwright
 
-from otto import TWITTER_AUTH_COOKIE
+from otto.constants import TWITTER_AUTH_COOKIE
 
 COOKIES: Final[list[Any]] = [
     {
@@ -21,6 +21,7 @@ logger: Final = logging.getLogger(__name__)
 
 
 async def screenshot_article(url: str, path: str | Path) -> bool:
+    """Screenshot an article."""
     try:
         async with async_playwright() as p:
             browser = await p.firefox.launch()
@@ -33,6 +34,6 @@ async def screenshot_article(url: str, path: str | Path) -> bool:
             await element.screenshot(path=path)
             await browser.close()
             return True
-    except Exception as e:
-        logger.error("Error screenshotting article", exc_info=e)
+    except Exception:
+        logger.exception("Error screenshotting article")
         return False

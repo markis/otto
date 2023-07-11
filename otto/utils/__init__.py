@@ -1,78 +1,61 @@
 import asyncio
-import os
 import tempfile
 import urllib.parse
 import urllib.request
 from collections.abc import Callable, Coroutine
 from datetime import datetime
+from pathlib import Path
+from typing import Final
 
-import pytz
 import requests
 
-TIMEZONE = pytz.timezone("America/New_York")
+from otto.constants import DEFAULT_TIMEOUT, TIMEZONE
+from otto.utils.convert import convert_httpstring
+
+HTTP_SUCCESS: Final = 200
 
 
 def get_now() -> datetime:
+    """Return the current time in the TIMEZONE."""
     return datetime.now(tz=TIMEZONE)
 
 
 def get_time(d: datetime) -> str:
+    """Return the time of the datetime object in 12-hour format."""
     return datetime.strftime(d, "%-I:%M")
 
 
 def get_date(d: datetime) -> str:
+    """Return the date of the datetime object in MM/DD format."""
     return datetime.strftime(d, "%m/%d")
 
 
-# def get_date_special(d: datetime) -> str:
-#     date_str = get_date(d)
-#     weekday = d.weekday()
-#     hour = d.hour
-
-#     if weekday == 0:
-#         date_str = date_str + " (Mon)"
-#     if weekday == 3:
-#         date_str = date_str + " (Thurs)"
-#     if weekday == 6 and hour == 20:
-#         date_str = date_str + " (Sun Night)"
-
-#     return date_str
-
-
-def convert_isostring(dt: str) -> datetime:
-    d = datetime.strptime(dt, "%Y-%m-%dT%H:%M:%S.%f%z")
-    d = d.astimezone(TIMEZONE)
-    return d
-
-
-def convert_tzstring(dt: str) -> datetime:
-    d = datetime.strptime(dt, "%Y-%m-%dT%H:%M:%S%z")
-    d = d.astimezone(TIMEZONE)
-    return d
-
-
-def convert_httpstring(dt: str) -> datetime:
-    d = datetime.strptime(dt, "%a, %d %b %Y %H:%M:%S %Z")
-    d = d.astimezone(TIMEZONE)
-    return d
-
-
 def download_image(image_url: str) -> str:
-    url_path = urllib.parse.urlparse(image_url).path
-    file_ext = os.path.splitext(url_path)[1]
-    file_name = tempfile.mkstemp(file_ext)[1]
-    urllib.request.urlretrieve(image_url, filename=file_name)
-    return file_name
+    """Download an image from a URL and return the file path."""
+    if url_path := urllib.parse.urlparse(image_url).path:
+        file_ext = Path(url_path).suffix
+        file_name = tempfile.mkstemp(file_ext)[1]
+        response = requests.get(image_url, stream=True, timeout=DEFAULT_TIMEOUT)
+        if response.status_code == HTTP_SUCCESS:
+            with Path(file_name).open("wb") as file:
+                for chunk in response.iter_content(chunk_size=1024):
+                    file.write(chunk)
+                    return file_name
+
+    err_msg = f"Failed to download image from {image_url}"
+    raise ValueError(err_msg)
 
 
 def get_url_age(url: str) -> datetime:
-    head_resp = requests.head(url)
+    """Get the last modified time of a URL."""
+    head_resp = requests.head(url, timeout=10)
     lm = head_resp.headers["last-modified"]
     return convert_httpstring(lm)
 
 
 async def delete_file(file_path: str) -> None:
-    os.remove(file_path)
+    """Delete a file from the file system."""
+    Path(file_path).unlink(missing_ok=True)
 
 
 async def repeat(interval: float, func: Callable[[], Coroutine[None, None, None]]) -> None:

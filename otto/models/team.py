@@ -1,6 +1,7 @@
 import os
+from typing import Self
 
-from otto import ASSETS_DIRECTORY
+from otto.constants import ASSETS_DIRECTORY
 
 ABBR_TO_SUBREDDIT = {
     "KC": "/r/kansascitychiefs",
@@ -183,37 +184,47 @@ ABBR_TO_LOCATION = {
 
 
 def get_subreddit(abbr: str) -> str:
+    """Return the subreddit of the team with the given abbreviation."""
     return ABBR_TO_SUBREDDIT[abbr.upper()]
 
 
 def get_position(abbr: str) -> int:
+    """Return the position in the team sprite of the team with the given abbreviation."""
     return ABBR_TO_POSITION[abbr.upper()]
 
 
 def get_location(abbr: str) -> tuple[float, float]:
+    """Return the location by lat/long of the team with the given abbreviation."""
     return ABBR_TO_LOCATION[abbr.upper()]
 
 
 def get_abbr(name: str) -> str:
+    """Return the abbreviation of the team with the given name."""
     return NICKNAME_TO_ABBR[name]
 
 
-def get_name(id: str) -> str:
-    return ABBR_TO_NAME[id]
+def get_name(team_id: str) -> str:
+    """Return the full name of the team with the given abbreviation."""
+    return ABBR_TO_NAME[team_id]
 
 
 def get_small_icon_path(abbr: str) -> str:
-    return os.path.normpath(ASSETS_DIRECTORY + f"/small-teams/{abbr}.png")
+    """Return the path to the small icon for the given team."""
+    return os.path.normpath(ASSETS_DIRECTORY / "/small-teams" / f"{abbr}.png")
 
 
 def get_small_bw_icon_path(abbr: str) -> str:
-    return os.path.normpath(ASSETS_DIRECTORY + f"/small-bw-teams/{abbr}.png")
+    """Return the path to the small black and white icon for the given team."""
+    return os.path.normpath(ASSETS_DIRECTORY / "/small-bw-teams" / f"{abbr}.png")
 
 
 class Team:
+    """A team."""
+
     abbr: str
     name: str
 
-    def __init__(self, abbr: str, name: str) -> None:
+    def __init__(self: Self, abbr: str, name: str) -> None:
+        """Initialize a team."""
         self.abbr = abbr
         self.name = name

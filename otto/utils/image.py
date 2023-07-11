@@ -1,34 +1,43 @@
-import os
 import tempfile
+from pathlib import Path
 
 from wand.exceptions import MissingDelegateError
 from wand.image import Image
 
+from otto.constants import DEFAULT_IMAGE_HEIGHT, DEFAULT_IMAGE_WIDTH
+
 
 def get_image_size(filename: str) -> tuple[int, int]:
+    """Get the width and height of an image."""
     try:
         with Image(filename=filename) as img:
             return img.width, img.height
     except MissingDelegateError:
-        return 300, 400
+        return DEFAULT_IMAGE_WIDTH, DEFAULT_IMAGE_HEIGHT
 
 
 def get_fileext(filename: str, img: Image) -> str:
-    tmp_file_ext = os.path.splitext(filename)[1]
+    """Get the file extension of an image."""
+    tmp_file_ext = Path(filename).suffix
     if tmp_file_ext in [".jpg", ".png", ".gif", ".webp"]:
         return tmp_file_ext
-    elif img.mimetype == b"image/jpeg" or img.mimetype == b"image/jpg":
+    if img.mimetype == b"image/jpeg" or img.mimetype == b"image/jpg":
         return ".jpg"
-    elif img.mimetype == b"image/png":
+    if img.mimetype == b"image/png":
         return ".png"
-    elif img.mimetype == b"image/gif":
+    if img.mimetype == b"image/gif":
         return ".gif"
-    elif img.mimetype == b"image/webp":
+    if img.mimetype == b"image/webp":
         return ".webp"
     return ".png"
 
 
-def resize_image(filename: str, max_width: int = int(300 * 2), max_height: int = int(400 * 2)) -> tuple[str, int, int]:
+def resize_image(
+    filename: str,
+    max_width: int = int(DEFAULT_IMAGE_WIDTH * 2),
+    max_height: int = int(DEFAULT_IMAGE_HEIGHT * 2),
+) -> tuple[str, int, int]:
+    """Resize an image to a max width and height."""
     assert filename
 
     new_file_name = None

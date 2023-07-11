@@ -1,14 +1,17 @@
 import re
-from datetime import datetime
-from typing import Any
+from typing import TYPE_CHECKING, Final
 
 from asyncpraw.reddit import Reddit
 
-from otto.config import Config
 from otto.models.game import Game
 from otto.models.record import Record
 from otto.models.team import get_name, get_subreddit
 from otto.utils import get_date, get_time
+
+if TYPE_CHECKING:
+    from datetime import datetime
+
+BYE_WEEK_LENGTH: Final = 11
 
 spacer = "&nbsp;&nbsp;&nbsp;"
 season_table_header = f"""
@@ -52,28 +55,28 @@ standings_regex = re.compile(
 
 
 def get_game_outcome(game: Game) -> str:
-    outcome = get_time(game.game_time)
-    if game.game_phase != "PREGAME":
-        if game.at_home:
-            if game.home_score > game.visitor_score:
-                outcome = f"W {game.home_score}-{game.visitor_score}"
-            elif game.home_score < game.visitor_score:
-                outcome = f"L {game.home_score}-{game.visitor_score}"
-            else:
-                outcome = f"T {game.home_score}-{game.visitor_score}"
-        else:
-            if game.visitor_score > game.home_score:
-                outcome = f"W {game.visitor_score}-{game.home_score}"
-            elif game.visitor_score < game.home_score:
-                outcome = f"L {game.visitor_score}-{game.home_score}"
-            else:
-                outcome = f"T {game.visitor_score}-{game.home_score}"
+    """Return the outcome of a game."""
+    outcome = ""
+    if game.game_phase == "PREGAME":
+        outcome = get_time(game.game_time)
+    elif game.at_home and game.home_score > game.visitor_score:
+        outcome = f"W {game.home_score}-{game.visitor_score}"
+    elif game.at_home and game.home_score < game.visitor_score:
+        outcome = f"L {game.home_score}-{game.visitor_score}"
+    elif game.at_home and game.home_score == game.visitor_score:
+        outcome = f"T {game.home_score}-{game.visitor_score}"
+    elif not game.at_home and game.visitor_score > game.home_score:
+        outcome = f"W {game.visitor_score}-{game.home_score}"
+    elif not game.at_home and game.visitor_score < game.home_score:
+        outcome = f"L {game.visitor_score}-{game.home_score}"
+    elif not game.at_home and game.home_score == game.visitor_score:
+        outcome = f"T {game.visitor_score}-{game.home_score}"
     return outcome
 
 
-def _get_seasons(games: list[Game]) -> Any:
-    preseason = list()
-    regular = list()
+def _get_seasons(games: list[Game]) -> dict[str, str]:
+    preseason = []
+    regular = []
     last_game_date: datetime | None = None
     for game in games:
         date = get_date(game.game_time)
@@ -86,27 +89,23 @@ def _get_seasons(games: list[Game]) -> Any:
         time_since_last_game = last_game_date and game.game_time - last_game_date
         last_game_date = game.game_time
 
-        if time_since_last_game and time_since_last_game.days > 11:
+        if time_since_last_game and time_since_last_game.days > BYE_WEEK_LENGTH:
             regular.append("|BYE|||")
 
         if game.season_type == "PRE":
             preseason.append(f"|{date}|{at}|[]({sub}) {abbr}|{outcome}|")
         if game.season_type == "REG":
-            # date = get_date_special(game.game_time)
             regular.append(f"|{date}|{at}|**[{name}]({sub})**|{outcome}|")
 
     return {"preseason": "\n".join(preseason), "regular": "\n".join(regular)}
 
 
 def _maybe_add_tie(tie: int) -> str:
-    if tie > 0:
-        return f"-{tie}"
-    else:
-        return ""
+    return "" if not tie else f"-{tie}"
 
 
 def _get_records(records: list[Record]) -> str:
-    standings = list()
+    standings = []
     for record in records:
         abbr = record.abbr
         sub = get_subreddit(record.abbr)
@@ -122,12 +121,12 @@ def _get_records(records: list[Record]) -> str:
 
 
 async def update_sidebar_score(
-    config: Config,
     reddit: Reddit,
     sr_name: str,
     games: list[Game],
     records: list[Record],
 ) -> None:
+    """Update the sidebar with the current score."""
     seasons = _get_seasons(games)
     standings = _get_records(records)
 
@@ -143,7 +142,6 @@ async def update_sidebar_score(
     if desc != new_desc:
         # Normal method of updating doesn't work, but this work around does
         # https://www.reddit.com/r/redditdev/comments/hztfgc/praw_subredditmoderationupdate_not_updating/
-        # sr_browns.mod.update(description=new_desc)
         sr_browns.wiki["config/sidebar"].edit(new_desc)
 
     # Update new reddit
@@ -159,6 +157,5 @@ async def update_sidebar_score(
         elif widget.shortName == "2021 Opponents":
             if widget.text != regular:
                 widget.mod.update(text=regular)
-        elif widget.shortName == "AFCN Standings":
-            if widget.text != standings:
-                widget.mod.update(text=standings)
+        elif widget.shortName == "AFCN Standings" and widget.text != standings:
+            widget.mod.update(text=standings)

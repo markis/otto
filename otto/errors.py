@@ -1,2 +1,0 @@
-class SidebarBackgroundImageError(BaseException):
-    pass
