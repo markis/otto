@@ -22,49 +22,48 @@ class NFLClient:
         """Get the scores for a given team. Defaults to the current team."""
         data = self._get_api_data(
             """
-              /v1/games?s={
-                "$query":{
+              /v1/games?s={{
+                "$query":{{
                   "week.season": 2021,
                   "$or":[
-                    {"homeTeam.abbr":"%s"},
-                    {"visitorTeam.abbr":"%s"}
+                    {{"homeTeam.abbr":"{}"}},
+                    {{"visitorTeam.abbr":"{}"}}
                   ]
-                }
-              }&fs={
+                }}
+              }}&fs={{
                 id,
                 gameTime,
-                week{
+                week{{
                   season,
                   seasonType,
                   week
-                },
-                homeTeam{
+                }},
+                homeTeam{{
                   id,
                   abbr,
                   nickName
-                },
-                visitorTeam{
+                }},
+                visitorTeam{{
                   id,
                   abbr,
                   nickName
-                },
-                homeTeamScore{
+                }},
+                homeTeamScore{{
                   pointsTotal
-                },
-                visitorTeamScore{
+                }},
+                visitorTeamScore{{
                   pointsTotal
-                },
-                gameStatus{
+                }},
+                gameStatus{{
                   phase
-                },
-                venue{
+                }},
+                venue{{
                   name,
                   location
-                },
+                }},
                 networkChannels
-              }
-            """  # noqa: UP031
-            % (team, team),
+              }}
+            """.format(team, team),
         )
 
         return [Game.from_nfl_dict(game_data) for game_data in data["data"]]
@@ -80,25 +79,24 @@ class NFLClient:
         stat_query = stat.replace(".", "{") + "}"
         data = self._get_api_data(
             """
-            /v1/playerTeamStats?s={
-              "$query":{
-                "season":%s,
-                "seasonType":"%s",
-                "team.abbr":"%s"
-              },"$sort":{
-                "%s":1
-              },
+            /v1/playerTeamStats?s={{
+              "$query":{{
+                "season":{},
+                "seasonType":"{}",
+                "team.abbr":"{}"
+              }},"$sort":{{
+                "{}":1
+              }},
               "$take":10,
               "$skip":0
-            }&fs={
-              person{
+            }}&fs={{
+              person{{
                 firstName,
                 lastName,
-              },
-              %s,
-            }
-            """  # noqa: UP031
-            % (season, season_type, team, stat, stat_query),
+              }},
+              {},
+            }}
+            """.format(season, season_type, team, stat, stat_query),
         )
         result = ""
         if data["data"]:
@@ -118,8 +116,8 @@ class NFLClient:
         """Get the value of a stat for a given player."""
         # Stat example: "passing.yards", "defensive.interceptions"
         # person example: { "firstName": "Baker", "lastName": "Mayfield"}.
-        stat_pieces: Final = stat.split(".")
         stat_value = 0
+        stat_pieces = stat.split(".")
         next_entry = player
         for stat_piece in stat_pieces:
             next_entry = next_entry.get(stat_piece, {})
@@ -441,7 +439,9 @@ class NFLClient:
         """Get data from the NFL API."""
         url = API_URL + re.sub(r"[\n\s]+", " ", url).strip()
         res = requests.get(
-            url=url, headers={"Authorization": "Bearer " + self._get_client_token()}, timeout=DEFAULT_TIMEOUT,
+            url=url,
+            headers={"Authorization": "Bearer " + self._get_client_token()},
+            timeout=DEFAULT_TIMEOUT,
         )
         try:
             return cast(dict[str, Any], res.json())

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from datetime import timedelta
 from typing import TYPE_CHECKING, Any, Self
 
 from otto.constants import TEAM_NAME
@@ -9,7 +10,7 @@ from otto.utils import get_now
 from otto.utils.convert import convert_isostring
 
 if TYPE_CHECKING:
-    from datetime import datetime, timedelta
+    from datetime import datetime
 
 
 @dataclass(slots=True, frozen=True, order=False)
@@ -129,22 +130,28 @@ class Game:
         )
 
 
-def get_next_game(games: list[Game], next_opp_delay: timedelta) -> Game | None:
+def get_next_game(games: list[Game], next_opp_delay: float) -> Game | None:
     """Return the next game."""
     next_game = None
     asc_games = sorted(games)
-    games_after_delay = [game for game in asc_games if game.time_until_game and next_opp_delay < game.time_until_game]
+    next_opp_delay_delta = timedelta(seconds=next_opp_delay)
+    games_after_delay = [
+        game for game in asc_games if game.time_until_game and next_opp_delay_delta < game.time_until_game
+    ]
     if games_after_delay:
         next_game = games_after_delay[0]
 
     return next_game
 
 
-def get_last_game(games: list[Game], next_opp_delay: timedelta) -> Game | None:
+def get_last_game(games: list[Game], next_opp_delay: float) -> Game | None:
     """Return the last game."""
     next_game = None
     desc_games = sorted(games, reverse=True)
-    games_before_delay = [game for game in desc_games if game.time_until_game and next_opp_delay > game.time_until_game]
+    next_opp_delay_delta = timedelta(seconds=next_opp_delay)
+    games_before_delay = [
+        game for game in desc_games if game.time_until_game and next_opp_delay_delta > game.time_until_game
+    ]
     if games_before_delay:
         next_game = games_before_delay[0]
 

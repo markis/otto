@@ -1,16 +1,17 @@
 from __future__ import annotations
 
 import time
-from typing import Self
+from typing import Self, final
 
 
+@final
 class Timer:
     """Context manager for timing code blocks."""
 
     _start: float
     _end: float
     _elapsed: float
-    __slots__: tuple[str, ...] = ()
+    __slots__ = ("_start", "_end", "_elapsed")
 
     @property
     def elapsed(self: Self) -> float:

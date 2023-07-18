@@ -5,6 +5,7 @@ __pycache__
 /otto-venv
 /venv
 /.coverage
+/.hypothesis
 /.pytest_cache
 /.mypy_cache
 /mypy

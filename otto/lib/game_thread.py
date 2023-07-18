@@ -1,5 +1,4 @@
-import asyncio
-from datetime import datetime, timedelta
+from datetime import datetime
 from textwrap import dedent
 from typing import Final
 
@@ -9,7 +8,6 @@ from otto.lib.nfl_client import NFLClient
 from otto.lib.weather_client import WeatherClient
 from otto.models.game import get_next_game
 from otto.models.team import get_location, get_subreddit
-from otto.types import SendMessage
 from otto.utils import get_time
 
 weather_client = WeatherClient()
@@ -23,9 +21,7 @@ logger: Final = root_logger.getChild("lib.game_thread")
 
 
 def _maybe_add_tie(tie: int) -> str:
-    if tie > 0:
-        return f"-{tie}"
-    return ""
+    return f"-{tie}" if tie > 0 else ""
 
 
 def _get_standings_table(nfl_client: NFLClient, team: str, opponent: str) -> str:
@@ -61,19 +57,12 @@ def _get_weather(team_abbr: str, game_time: datetime) -> str:
     return ""
 
 
-async def _default_send_message(msg: str) -> None:
-    """Print to console."""
-    logger.info(msg)
-
-
-async def generate_game_thread(
-    send_message: SendMessage = _default_send_message,
-) -> None:
+async def generate_game_thread() -> str:
     """Generate a game thread."""
     nfl_client = NFLClient()
     games = nfl_client.get_scores()
 
-    next_game = get_next_game(games, timedelta())
+    next_game = get_next_game(games, 0.0)
 
     assert next_game
     team_abbr = TEAM_NAME
@@ -157,9 +146,4 @@ async def generate_game_thread(
         *Title*
         ```{title}```
     """
-    message = dedent(message)
-    await send_message(message)
-
-
-if __name__ == "__main__":
-    asyncio.run(generate_game_thread())
+    return dedent(message)

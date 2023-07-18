@@ -15,10 +15,12 @@ from otto.utils import repeat
 
 logger: Final = root_logger.getChild("job")
 
+REPEAT_SECONDS: Final = 300
+
 
 def run() -> None:
     """Run the jobs. This is the entry point for the job. It's main point is convert async to sync."""
-    asyncio.run(main())
+    asyncio.run(main())  # pragma: no cover
 
 
 async def main(sr_name: str = SUBREDDIT_NAME) -> None:
@@ -30,7 +32,7 @@ async def main(sr_name: str = SUBREDDIT_NAME) -> None:
         async with get_reddit() as reddit:
             await run_jobs(config, reddit, sr_name)
 
-    await repeat(300, _run_jobs)
+    await repeat(REPEAT_SECONDS, _run_jobs)
 
 
 async def run_jobs(
@@ -58,4 +60,4 @@ async def run_jobs(
 
 
 if __name__ == "__main__":
-    run()
+    run()  # pragma: no cover

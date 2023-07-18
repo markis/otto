@@ -17,7 +17,7 @@ class WeatherClient:
 
     def get_weather(self: Self, lat: float, long: float, date: datetime | None = None) -> Weather | None:
         """Get the weather at a location and time."""
-        url: Final = f"https://api.weather.gov/points/{lat},{long}"
+        url = f"https://api.weather.gov/points/{lat},{long}"
         date = date or get_now()
         res = get(url, timeout=DEFAULT_TIMEOUT)
 

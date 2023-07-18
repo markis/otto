@@ -93,13 +93,11 @@ async def set_link_type(reddit: Reddit, sr_name: str, link_type: str) -> str:
     return responses[link_type]
 
 
-async def enable_text_posts(reddit: Reddit, sr_name: str, send_message: SendMessage) -> None:
+async def enable_text_posts(reddit: Reddit, sr_name: str) -> str:
     """Enable text posts for a subreddit."""
-    result = await set_link_type(reddit, sr_name, "any")
-    await send_message(result)
+    return await set_link_type(reddit, sr_name, "any")
 
 
-async def disable_text_posts(reddit: Reddit, sr_name: str, send_message: SendMessage) -> None:
+async def disable_text_posts(reddit: Reddit, sr_name: str) -> str:
     """Disable text posts for a subreddit."""
-    result = await set_link_type(reddit, sr_name, "link")
-    await send_message(result)
+    return await set_link_type(reddit, sr_name, "link")

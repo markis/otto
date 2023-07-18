@@ -9,8 +9,6 @@ from yaml import safe_load
 from otto.utils.convert import convert_to_bool, convert_to_int, convert_to_timedelta
 
 if TYPE_CHECKING:  # pragma: no cover
-    from datetime import timedelta
-
     from asyncpraw.models.reddit.wikipage import WikiPage
     from asyncpraw.reddit import Reddit
 
@@ -24,7 +22,7 @@ class Config:
 
     enable_automatic_sidebar_scores: Final[bool]
     enable_automatic_downvotes: Final[bool]
-    downvotes_delay: Final[timedelta]
+    downvotes_delay: Final[float]
     rule7_levenshtein_threshold: Final[int]
 
     def __init__(
@@ -32,7 +30,7 @@ class Config:
         *,
         enable_automatic_sidebar_scores: bool,
         enable_automatic_downvotes: bool,
-        downvotes_delay: timedelta,
+        downvotes_delay: float,
         rule7_levenshtein_threshold: int,
     ) -> None:
         """Initialize a Config object."""
@@ -40,12 +38,6 @@ class Config:
         self.enable_automatic_downvotes = enable_automatic_downvotes
         self.downvotes_delay = downvotes_delay
         self.rule7_levenshtein_threshold = rule7_levenshtein_threshold
-
-    @classmethod
-    def from_toml(cls: type[Config], config: str) -> Config:
-        """Create a Config object from a yaml string."""
-        config_values = safe_load(config) or {}
-        return cls.from_dict(config_values)
 
     @classmethod
     def from_yaml(cls: type[Config], config: str) -> Config:
@@ -64,7 +56,7 @@ class Config:
         return cls(
             enable_automatic_downvotes=enable_automatic_downvotes,
             enable_automatic_sidebar_scores=enable_automatic_sidebar_scores,
-            downvotes_delay=downvotes_delay,
+            downvotes_delay=downvotes_delay.total_seconds(),
             rule7_levenshtein_threshold=rule7_levenshtein_threshold,
         )
 

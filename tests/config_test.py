@@ -27,7 +27,7 @@ async def test_normal_case(mock_reddit: Mock) -> None:
     assert isinstance(config, Config)
     assert config.enable_automatic_downvotes is False
     assert config.enable_automatic_sidebar_scores is False
-    assert config.downvotes_delay == timedelta(days=-1)
+    assert config.downvotes_delay == timedelta(days=-1).total_seconds()
     assert config.rule7_levenshtein_threshold == TEST_LEVENSHTEIN_THRESHOLD
 
 
@@ -44,5 +44,5 @@ async def test_blank_page_returns_defaults(mock_reddit: Mock) -> None:
     assert isinstance(config, Config)
     assert config.enable_automatic_downvotes is False
     assert config.enable_automatic_sidebar_scores is False
-    assert config.downvotes_delay == timedelta(days=-1)
+    assert config.downvotes_delay == timedelta(days=-1).total_seconds()
     assert config.rule7_levenshtein_threshold == TEST_LEVENSHTEIN_THRESHOLD
