@@ -1,7 +1,6 @@
 from datetime import UTC, datetime
 
 import factory
-import hypothesis.strategies as st
 from factory.fuzzy import FuzzyChoice, FuzzyDateTime, FuzzyInteger
 
 from otto.models.game import Game
@@ -24,7 +23,7 @@ class GameFactory(factory.Factory):  # type: ignore[misc]
     season = str(SEASON)
     season_type = FuzzyChoice(["REG", "PRE", "POST"])
     week = factory.Faker("pyint", min_value=1, max_value=17)
-    at_home = st.booleans()
+    at_home = True
     opponent = factory.SubFactory(TeamFactory)
     home_score = FuzzyInteger(0, 50)
     visitor_score = FuzzyInteger(0, 50)

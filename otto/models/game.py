@@ -1,16 +1,13 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import timedelta
-from typing import TYPE_CHECKING, Any, Self
+from datetime import datetime, timedelta
+from typing import Any, Self
 
 from otto.constants import TEAM_NAME
 from otto.models.team import Team
 from otto.utils import get_now
 from otto.utils.convert import convert_isostring
-
-if TYPE_CHECKING:
-    from datetime import datetime
 
 
 @dataclass(slots=True, frozen=True, order=False)

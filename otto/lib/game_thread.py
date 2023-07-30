@@ -27,11 +27,9 @@ def _maybe_add_tie(tie: int) -> str:
 def _get_standings_table(nfl_client: NFLClient, team: str, opponent: str) -> str:
     records = nfl_client.get_standings(teams=[team, opponent])
 
-    standings_rows = []
-    for record in records:
-        standings_rows.append(
-            " ".join(
-                f"""|
+    standings_rows = [
+        " ".join(
+            f"""|
                 {record.abbr} |
                 {record.win}-{record.loss}{_maybe_add_tie(record.tie)} |
                 {record.home_win}-{record.home_loss}{_maybe_add_tie(record.home_tie)} |
@@ -40,19 +38,21 @@ def _get_standings_table(nfl_client: NFLClient, team: str, opponent: str) -> str
                 {record.conference_win}-{record.conference_loss}{_maybe_add_tie(record.conference_tie)} |
                 {record.streak} |
             """.split(),
-            ),
         )
+        for record in records
+    ]
     return standings_header + "\n".join(standings_rows)
 
 
-def _get_weather(team_abbr: str, game_time: datetime) -> str:
-    lat, lon = get_location(team_abbr)
+async def _get_weather(team_abbr: str, game_time: datetime) -> str:
     try:
-        w = weather_client.get_weather(lat, lon, game_time)
+        lat, lon = get_location(team_abbr)
+        w = await weather_client.get_weather(lat, lon, game_time)
         if w:
             return f"{w.temperature}° - {w.forecast} - Wind {w.wind_direction} {w.wind_speed}"
     except Exception:
         logger.exception("Error getting weather")
+        raise
 
     return ""
 
@@ -72,7 +72,7 @@ async def generate_game_thread() -> str:
     next_location_abbr = team_abbr if next_game.at_home else next_abbr
 
     standings_table = _get_standings_table(nfl_client, team_abbr, next_abbr)
-    weather_forecast = _get_weather(next_location_abbr, next_game.game_time)
+    weather_forecast = await _get_weather(next_location_abbr, next_game.game_time)
 
     team_subreddit = get_subreddit(team_abbr)
     next_subreddit = get_subreddit(next_abbr)
