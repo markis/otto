@@ -59,7 +59,13 @@ omit = ["*/__main__.py"]
 [tool.pytest.ini_options]
 minversion = "7.0"
 addopts = "-ra"
-testpaths = ["tests"]
+testpaths = [
+  "tests/integration",
+  "tests/unit",
+]
+filterwarnings = [
+  "ignore::DeprecationWarning:discord.player:"
+]
 
 [tool.black]
 target-version = ["py311"]

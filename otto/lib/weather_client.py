@@ -1,4 +1,5 @@
 from datetime import datetime
+from http import HTTPStatus
 from typing import Final, Self
 
 import aiohttp
@@ -17,26 +18,28 @@ class WeatherClient:
 
     async def get_weather(self: Self, lat: float, long: float, date: datetime | None = None) -> Weather | None:
         """Get the weather at a location and time."""
-        url = f"https://api.weather.gov/points/{lat},{long}"
+        url = f"https://api.weather.gov/points/{lat:.4f},{long:.4f}"
         date = date or get_now()
+        links = None
+
         async with (
             aiohttp.ClientSession() as session,
             session.get(url, timeout=DEFAULT_TIMEOUT) as res,
         ):
-            links = await res.json()
+            links = await res.json() if res.status == HTTPStatus.OK else {}
 
         if links and (forecast_url := links.get("properties", {}).get("forecast")):
             async with (
                 aiohttp.ClientSession() as session,
                 session.get(forecast_url, timeout=DEFAULT_TIMEOUT) as res,
             ):
-                weather = await res.json()
+                weather = await res.json() if res.status == HTTPStatus.OK else {}
 
-            periods = weather["properties"]["periods"]
+            periods = weather.get("properties", {}).get("periods", [])
             for period in periods:
                 forecast_start = convert_tzstring(period["startTime"])
                 forecast_end = convert_tzstring(period["endTime"])
 
-                if forecast_start <= date and forecast_end >= date:
+                if forecast_start <= date <= forecast_end:
                     return Weather.from_nws_period_dict(period)
         return None
