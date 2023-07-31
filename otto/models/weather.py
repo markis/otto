@@ -1,59 +1,32 @@
-from typing import Any, Final, Self, TypedDict
+from typing import Any, Final, Self, TypeGuard, TypedDict
 
 
-class WeatherLinksDict(TypedDict):
+class LinksPropertiesDict(TypedDict):
     """Weather information links from the National Weather Service."""
 
-    cwa: str
-    forecastOffice: str
-    gridId: str
-    gridX: int
-    gridY: int
     forecast: str
     forecastHourly: str
-    forecastGridData: str
-    observationStations: str
-    forecastZone: str
-    county: str
-    fireWeatherZone: str
-    timeZone: str
-    radarStation: str
 
 
-class LinksJSON(TypedDict):
+class LinksDict(TypedDict):
     """Weather information from the National Weather Service."""
 
-    id: str
-    type: str
-    properties: WeatherLinksDict
+    properties: LinksPropertiesDict
 
 
 class WeatherPeriodDict(TypedDict):
     """TypedDict for the properties of the periods field."""
 
-    number: int
-    name: str
     startTime: str
     endTime: str
     isDaytime: bool
     temperature: int
     temperatureUnit: str
-    temperatureTrend: str | None
-    probabilityOfPrecipitation: dict[str, Any] | None
     dewpoint: dict[str, Any]
     relativeHumidity: dict[str, Any]
     windSpeed: str
     windDirection: str
-    icon: str
     shortForecast: str
-    detailedForecast: str
-
-
-class ElevationDict(TypedDict):
-    """TypedDict for the properties of the elevation field."""
-
-    unitCode: str
-    value: float
 
 
 class WeatherPropertiesDict(TypedDict):
@@ -65,15 +38,23 @@ class WeatherPropertiesDict(TypedDict):
     generatedAt: str
     updateTime: str
     validTimes: str
-    elevation: ElevationDict
     periods: list[WeatherPeriodDict]
 
 
-class WeatherData(TypedDict):
+class WeatherDict(TypedDict):
     """Weather information from the National Weather Service."""
 
-    type: str
     properties: WeatherPropertiesDict
+
+
+def is_links_dict(value: object) -> TypeGuard[LinksDict]:
+    """Determine if data is LinksDict."""
+    return isinstance(value, dict) and "properties" in value and "forecast" in value["properties"]
+
+
+def is_weather_dict(value: object) -> TypeGuard[WeatherDict]:
+    """Determine if data is LinksDict."""
+    return isinstance(value, dict) and "properties" in value and "periods" in value["properties"]
 
 
 class Weather:

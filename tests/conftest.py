@@ -1,5 +1,4 @@
-import glob
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 from unittest.mock import AsyncMock, Mock
 
 import pytest
@@ -10,10 +9,14 @@ from asyncpraw.reddit import Reddit
 from otto import AsyncGenReddit
 from otto.config import Config
 
-for file in glob.glob("tests/fixtures/*.py"):
-    module = file.replace("/", ".")[:-3]
-    print(module)
-    __import__(module, locals(), globals(), ("*",))
+
+@pytest.fixture(autouse=True)
+def vcr_config() -> dict[str, Any]:
+    """Configure VCR and pytest-recording."""
+    return {
+        "filter_headers": ["authorization"],
+        "record_mode": "once",
+    }
 
 
 @pytest.fixture(scope="module")

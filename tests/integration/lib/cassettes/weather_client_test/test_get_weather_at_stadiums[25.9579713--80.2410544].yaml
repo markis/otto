@@ -1,0 +1,435 @@
+interactions:
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Host:
+      - api.weather.gov
+      User-Agent:
+      - Python/3.11 aiohttp/3.8.5
+    method: GET
+    uri: https://api.weather.gov/points/25.9580,-80.2411
+  response:
+    body: {}
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - X-Correlation-Id, X-Request-Id, X-Server-Id
+      Cache-Control:
+      - private, must-revalidate, max-age=85570
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '461'
+      Content-Type:
+      - application/problem+json
+      Date:
+      - Mon, 31 Jul 2023 12:56:57 GMT
+      Expires:
+      - Tue, 01 Aug 2023 12:43:07 GMT
+      Location:
+      - /points/25.958,-80.2411
+      Pragma:
+      - no-cache
+      Server:
+      - nginx/1.20.1
+      Strict-Transport-Security:
+      - max-age=31536000 ; includeSubDomains ; preload
+      Vary:
+      - Accept,Feature-Flags,Accept-Language
+      X-Correlation-ID:
+      - 2b101395
+      X-Edge-Request-ID:
+      - 259addd5
+      X-Request-ID:
+      - c032cbcb-1c12-4d23-ad97-16801a297909
+      X-Server-ID:
+      - vm-bldr-nids-apiapp1.ncep.noaa.gov
+    status:
+      code: 301
+      message: Moved Permanently
+    url: https://api.weather.gov/points/25.9580,-80.2411
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Host:
+      - api.weather.gov
+      User-Agent:
+      - Python/3.11 aiohttp/3.8.5
+    method: GET
+    uri: https://api.weather.gov/points/25.958,-80.2411
+  response:
+    body:
+      string: "{\n    \"@context\": [\n        \"https://geojson.org/geojson-ld/geojson-context.jsonld\",\n
+        \       {\n            \"@version\": \"1.1\",\n            \"wx\": \"https://api.weather.gov/ontology#\",\n
+        \           \"s\": \"https://schema.org/\",\n            \"geo\": \"http://www.opengis.net/ont/geosparql#\",\n
+        \           \"unit\": \"http://codes.wmo.int/common/unit/\",\n            \"@vocab\":
+        \"https://api.weather.gov/ontology#\",\n            \"geometry\": {\n                \"@id\":
+        \"s:GeoCoordinates\",\n                \"@type\": \"geo:wktLiteral\"\n            },\n
+        \           \"city\": \"s:addressLocality\",\n            \"state\": \"s:addressRegion\",\n
+        \           \"distance\": {\n                \"@id\": \"s:Distance\",\n                \"@type\":
+        \"s:QuantitativeValue\"\n            },\n            \"bearing\": {\n                \"@type\":
+        \"s:QuantitativeValue\"\n            },\n            \"value\": {\n                \"@id\":
+        \"s:value\"\n            },\n            \"unitCode\": {\n                \"@id\":
+        \"s:unitCode\",\n                \"@type\": \"@id\"\n            },\n            \"forecastOffice\":
+        {\n                \"@type\": \"@id\"\n            },\n            \"forecastGridData\":
+        {\n                \"@type\": \"@id\"\n            },\n            \"publicZone\":
+        {\n                \"@type\": \"@id\"\n            },\n            \"county\":
+        {\n                \"@type\": \"@id\"\n            }\n        }\n    ],\n
+        \   \"id\": \"https://api.weather.gov/points/25.9579999,-80.2411\",\n    \"type\":
+        \"Feature\",\n    \"geometry\": {\n        \"type\": \"Point\",\n        \"coordinates\":
+        [\n            -80.241100000000003,\n            25.957999900000001\n        ]\n
+        \   },\n    \"properties\": {\n        \"@id\": \"https://api.weather.gov/points/25.9579999,-80.2411\",\n
+        \       \"@type\": \"wx:Point\",\n        \"cwa\": \"MFL\",\n        \"forecastOffice\":
+        \"https://api.weather.gov/offices/MFL\",\n        \"gridId\": \"MFL\",\n        \"gridX\":
+        107,\n        \"gridY\": 58,\n        \"forecast\": \"https://api.weather.gov/gridpoints/MFL/107,58/forecast\",\n
+        \       \"forecastHourly\": \"https://api.weather.gov/gridpoints/MFL/107,58/forecast/hourly\",\n
+        \       \"forecastGridData\": \"https://api.weather.gov/gridpoints/MFL/107,58\",\n
+        \       \"observationStations\": \"https://api.weather.gov/gridpoints/MFL/107,58/stations\",\n
+        \       \"relativeLocation\": {\n            \"type\": \"Feature\",\n            \"geometry\":
+        {\n                \"type\": \"Point\",\n                \"coordinates\":
+        [\n                    -80.243584999999996,\n                    25.948892000000001\n
+        \               ]\n            },\n            \"properties\": {\n                \"city\":
+        \"Miami Gardens\",\n                \"state\": \"FL\",\n                \"distance\":
+        {\n                    \"unitCode\": \"wmoUnit:m\",\n                    \"value\":
+        1042.7842125059999\n                },\n                \"bearing\": {\n                    \"unitCode\":
+        \"wmoUnit:degree_(angle)\",\n                    \"value\": 13\n                }\n
+        \           }\n        },\n        \"forecastZone\": \"https://api.weather.gov/zones/forecast/FLZ074\",\n
+        \       \"county\": \"https://api.weather.gov/zones/county/FLC086\",\n        \"fireWeatherZone\":
+        \"https://api.weather.gov/zones/fire/FLZ074\",\n        \"timeZone\": \"America/New_York\",\n
+        \       \"radarStation\": \"KAMX\"\n    }\n}"
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - X-Correlation-Id, X-Request-Id, X-Server-Id
+      Cache-Control:
+      - public, max-age=85560, s-maxage=120
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '817'
+      Content-Type:
+      - application/geo+json
+      Date:
+      - Mon, 31 Jul 2023 12:56:57 GMT
+      Expires:
+      - Tue, 01 Aug 2023 12:42:57 GMT
+      Server:
+      - nginx/1.20.1
+      Strict-Transport-Security:
+      - max-age=31536000 ; includeSubDomains ; preload
+      Vary:
+      - Accept-Encoding
+      - Accept,Feature-Flags,Accept-Language
+      X-Correlation-ID:
+      - '26635801'
+      X-Edge-Request-ID:
+      - 259addfc
+      X-Request-ID:
+      - 6ab2dac4-0fd4-4dcf-aa32-b4620f153628
+      X-Server-ID:
+      - vm-bldr-nids-apiapp9.ncep.noaa.gov
+    status:
+      code: 200
+      message: OK
+    url: https://api.weather.gov/points/25.958,-80.2411
+- request:
+    body: null
+    headers: {}
+    method: GET
+    uri: https://api.weather.gov/gridpoints/MFL/107,58/forecast
+  response:
+    body:
+      string: "{\n    \"@context\": [\n        \"https://geojson.org/geojson-ld/geojson-context.jsonld\",\n
+        \       {\n            \"@version\": \"1.1\",\n            \"wx\": \"https://api.weather.gov/ontology#\",\n
+        \           \"geo\": \"http://www.opengis.net/ont/geosparql#\",\n            \"unit\":
+        \"http://codes.wmo.int/common/unit/\",\n            \"@vocab\": \"https://api.weather.gov/ontology#\"\n
+        \       }\n    ],\n    \"type\": \"Feature\",\n    \"geometry\": {\n        \"type\":
+        \"Polygon\",\n        \"coordinates\": [\n            [\n                [\n
+        \                   -80.252387400000003,\n                    25.961179900000001\n
+        \               ],\n                [\n                    -80.255144600000008,\n
+        \                   25.938477000000002\n                ],\n                [\n
+        \                   -80.229891400000014,\n                    25.935995200000001\n
+        \               ],\n                [\n                    -80.227129600000012,\n
+        \                   25.958697700000002\n                ],\n                [\n
+        \                   -80.252387400000003,\n                    25.961179900000001\n
+        \               ]\n            ]\n        ]\n    },\n    \"properties\": {\n
+        \       \"updated\": \"2023-07-31T10:47:16+00:00\",\n        \"units\": \"us\",\n
+        \       \"forecastGenerator\": \"BaselineForecastGenerator\",\n        \"generatedAt\":
+        \"2023-07-31T12:43:24+00:00\",\n        \"updateTime\": \"2023-07-31T10:47:16+00:00\",\n
+        \       \"validTimes\": \"2023-07-31T04:00:00+00:00/P7DT21H\",\n        \"elevation\":
+        {\n            \"unitCode\": \"wmoUnit:m\",\n            \"value\": 2.1335999999999999\n
+        \       },\n        \"periods\": [\n            {\n                \"number\":
+        1,\n                \"name\": \"Today\",\n                \"startTime\": \"2023-07-31T08:00:00-04:00\",\n
+        \               \"endTime\": \"2023-07-31T18:00:00-04:00\",\n                \"isDaytime\":
+        true,\n                \"temperature\": 94,\n                \"temperatureUnit\":
+        \"F\",\n                \"temperatureTrend\": \"falling\",\n                \"probabilityOfPrecipitation\":
+        {\n                    \"unitCode\": \"wmoUnit:percent\",\n                    \"value\":
+        70\n                },\n                \"dewpoint\": {\n                    \"unitCode\":
+        \"wmoUnit:degC\",\n                    \"value\": 25.555555555555557\n                },\n
+        \               \"relativeHumidity\": {\n                    \"unitCode\":
+        \"wmoUnit:percent\",\n                    \"value\": 88\n                },\n
+        \               \"windSpeed\": \"9 mph\",\n                \"windDirection\":
+        \"S\",\n                \"icon\": \"https://api.weather.gov/icons/land/day/tsra_hi,20/tsra_hi,70?size=medium\",\n
+        \               \"shortForecast\": \"Showers And Thunderstorms Likely\",\n
+        \               \"detailedForecast\": \"Showers and thunderstorms likely after
+        11am. Mostly sunny. High near 94, with temperatures falling to around 89 in
+        the afternoon. Heat index values as high as 105. South wind around 9 mph.
+        Chance of precipitation is 70%. New rainfall amounts between a quarter and
+        half of an inch possible.\"\n            },\n            {\n                \"number\":
+        2,\n                \"name\": \"Tonight\",\n                \"startTime\":
+        \"2023-07-31T18:00:00-04:00\",\n                \"endTime\": \"2023-08-01T06:00:00-04:00\",\n
+        \               \"isDaytime\": false,\n                \"temperature\": 79,\n
+        \               \"temperatureUnit\": \"F\",\n                \"temperatureTrend\":
+        null,\n                \"probabilityOfPrecipitation\": {\n                    \"unitCode\":
+        \"wmoUnit:percent\",\n                    \"value\": 50\n                },\n
+        \               \"dewpoint\": {\n                    \"unitCode\": \"wmoUnit:degC\",\n
+        \                   \"value\": 24.444444444444443\n                },\n                \"relativeHumidity\":
+        {\n                    \"unitCode\": \"wmoUnit:percent\",\n                    \"value\":
+        85\n                },\n                \"windSpeed\": \"5 to 9 mph\",\n                \"windDirection\":
+        \"S\",\n                \"icon\": \"https://api.weather.gov/icons/land/night/tsra_hi,50/bkn?size=medium\",\n
+        \               \"shortForecast\": \"Chance Showers And Thunderstorms then
+        Mostly Cloudy\",\n                \"detailedForecast\": \"A chance of showers
+        and thunderstorms before midnight. Mostly cloudy, with a low around 79. South
+        wind 5 to 9 mph. Chance of precipitation is 50%. New rainfall amounts between
+        a quarter and half of an inch possible.\"\n            },\n            {\n
+        \               \"number\": 3,\n                \"name\": \"Tuesday\",\n                \"startTime\":
+        \"2023-08-01T06:00:00-04:00\",\n                \"endTime\": \"2023-08-01T18:00:00-04:00\",\n
+        \               \"isDaytime\": true,\n                \"temperature\": 93,\n
+        \               \"temperatureUnit\": \"F\",\n                \"temperatureTrend\":
+        \"falling\",\n                \"probabilityOfPrecipitation\": {\n                    \"unitCode\":
+        \"wmoUnit:percent\",\n                    \"value\": 70\n                },\n
+        \               \"dewpoint\": {\n                    \"unitCode\": \"wmoUnit:degC\",\n
+        \                   \"value\": 25.555555555555557\n                },\n                \"relativeHumidity\":
+        {\n                    \"unitCode\": \"wmoUnit:percent\",\n                    \"value\":
+        88\n                },\n                \"windSpeed\": \"3 to 9 mph\",\n                \"windDirection\":
+        \"SW\",\n                \"icon\": \"https://api.weather.gov/icons/land/day/tsra_hi,30/tsra_hi,70?size=medium\",\n
+        \               \"shortForecast\": \"Showers And Thunderstorms Likely\",\n
+        \               \"detailedForecast\": \"Showers and thunderstorms likely after
+        8am. Mostly sunny. High near 93, with temperatures falling to around 88 in
+        the afternoon. Heat index values as high as 104. Southwest wind 3 to 9 mph.
+        Chance of precipitation is 70%. New rainfall amounts between three quarters
+        and one inch possible.\"\n            },\n            {\n                \"number\":
+        4,\n                \"name\": \"Tuesday Night\",\n                \"startTime\":
+        \"2023-08-01T18:00:00-04:00\",\n                \"endTime\": \"2023-08-02T06:00:00-04:00\",\n
+        \               \"isDaytime\": false,\n                \"temperature\": 79,\n
+        \               \"temperatureUnit\": \"F\",\n                \"temperatureTrend\":
+        null,\n                \"probabilityOfPrecipitation\": {\n                    \"unitCode\":
+        \"wmoUnit:percent\",\n                    \"value\": 70\n                },\n
+        \               \"dewpoint\": {\n                    \"unitCode\": \"wmoUnit:degC\",\n
+        \                   \"value\": 24.444444444444443\n                },\n                \"relativeHumidity\":
+        {\n                    \"unitCode\": \"wmoUnit:percent\",\n                    \"value\":
+        87\n                },\n                \"windSpeed\": \"5 to 8 mph\",\n                \"windDirection\":
+        \"SW\",\n                \"icon\": \"https://api.weather.gov/icons/land/night/tsra_sct,70/tsra_sct,40?size=medium\",\n
+        \               \"shortForecast\": \"Showers And Thunderstorms Likely\",\n
+        \               \"detailedForecast\": \"Showers and thunderstorms likely.
+        Mostly cloudy, with a low around 79. Southwest wind 5 to 8 mph. Chance of
+        precipitation is 70%.\"\n            },\n            {\n                \"number\":
+        5,\n                \"name\": \"Wednesday\",\n                \"startTime\":
+        \"2023-08-02T06:00:00-04:00\",\n                \"endTime\": \"2023-08-02T18:00:00-04:00\",\n
+        \               \"isDaytime\": true,\n                \"temperature\": 93,\n
+        \               \"temperatureUnit\": \"F\",\n                \"temperatureTrend\":
+        null,\n                \"probabilityOfPrecipitation\": {\n                    \"unitCode\":
+        \"wmoUnit:percent\",\n                    \"value\": 70\n                },\n
+        \               \"dewpoint\": {\n                    \"unitCode\": \"wmoUnit:degC\",\n
+        \                   \"value\": 25\n                },\n                \"relativeHumidity\":
+        {\n                    \"unitCode\": \"wmoUnit:percent\",\n                    \"value\":
+        90\n                },\n                \"windSpeed\": \"3 to 9 mph\",\n                \"windDirection\":
+        \"NW\",\n                \"icon\": \"https://api.weather.gov/icons/land/day/tsra_hi,50/tsra_hi,70?size=medium\",\n
+        \               \"shortForecast\": \"Chance Showers And Thunderstorms\",\n
+        \               \"detailedForecast\": \"A chance of showers and thunderstorms
+        before 2pm, then showers and thunderstorms likely. Mostly sunny, with a high
+        near 93. Northwest wind 3 to 9 mph. Chance of precipitation is 70%.\"\n            },\n
+        \           {\n                \"number\": 6,\n                \"name\": \"Wednesday
+        Night\",\n                \"startTime\": \"2023-08-02T18:00:00-04:00\",\n
+        \               \"endTime\": \"2023-08-03T06:00:00-04:00\",\n                \"isDaytime\":
+        false,\n                \"temperature\": 78,\n                \"temperatureUnit\":
+        \"F\",\n                \"temperatureTrend\": null,\n                \"probabilityOfPrecipitation\":
+        {\n                    \"unitCode\": \"wmoUnit:percent\",\n                    \"value\":
+        70\n                },\n                \"dewpoint\": {\n                    \"unitCode\":
+        \"wmoUnit:degC\",\n                    \"value\": 24.444444444444443\n                },\n
+        \               \"relativeHumidity\": {\n                    \"unitCode\":
+        \"wmoUnit:percent\",\n                    \"value\": 88\n                },\n
+        \               \"windSpeed\": \"3 to 8 mph\",\n                \"windDirection\":
+        \"E\",\n                \"icon\": \"https://api.weather.gov/icons/land/night/tsra_hi,70/tsra_hi,30?size=medium\",\n
+        \               \"shortForecast\": \"Showers And Thunderstorms Likely then
+        Chance Showers And Thunderstorms\",\n                \"detailedForecast\":
+        \"Showers and thunderstorms likely before 8pm, then a chance of showers and
+        thunderstorms between 8pm and 2am. Partly cloudy, with a low around 78. East
+        wind 3 to 8 mph. Chance of precipitation is 70%.\"\n            },\n            {\n
+        \               \"number\": 7,\n                \"name\": \"Thursday\",\n
+        \               \"startTime\": \"2023-08-03T06:00:00-04:00\",\n                \"endTime\":
+        \"2023-08-03T18:00:00-04:00\",\n                \"isDaytime\": true,\n                \"temperature\":
+        91,\n                \"temperatureUnit\": \"F\",\n                \"temperatureTrend\":
+        null,\n                \"probabilityOfPrecipitation\": {\n                    \"unitCode\":
+        \"wmoUnit:percent\",\n                    \"value\": 60\n                },\n
+        \               \"dewpoint\": {\n                    \"unitCode\": \"wmoUnit:degC\",\n
+        \                   \"value\": 25\n                },\n                \"relativeHumidity\":
+        {\n                    \"unitCode\": \"wmoUnit:percent\",\n                    \"value\":
+        89\n                },\n                \"windSpeed\": \"3 to 8 mph\",\n                \"windDirection\":
+        \"E\",\n                \"icon\": \"https://api.weather.gov/icons/land/day/tsra_hi,40/tsra_hi,60?size=medium\",\n
+        \               \"shortForecast\": \"Chance Showers And Thunderstorms\",\n
+        \               \"detailedForecast\": \"A chance of showers and thunderstorms
+        between 8am and 2pm, then showers and thunderstorms likely. Sunny, with a
+        high near 91. East wind 3 to 8 mph. Chance of precipitation is 60%.\"\n            },\n
+        \           {\n                \"number\": 8,\n                \"name\": \"Thursday
+        Night\",\n                \"startTime\": \"2023-08-03T18:00:00-04:00\",\n
+        \               \"endTime\": \"2023-08-04T06:00:00-04:00\",\n                \"isDaytime\":
+        false,\n                \"temperature\": 78,\n                \"temperatureUnit\":
+        \"F\",\n                \"temperatureTrend\": null,\n                \"probabilityOfPrecipitation\":
+        {\n                    \"unitCode\": \"wmoUnit:percent\",\n                    \"value\":
+        60\n                },\n                \"dewpoint\": {\n                    \"unitCode\":
+        \"wmoUnit:degC\",\n                    \"value\": 23.888888888888889\n                },\n
+        \               \"relativeHumidity\": {\n                    \"unitCode\":
+        \"wmoUnit:percent\",\n                    \"value\": 85\n                },\n
+        \               \"windSpeed\": \"7 mph\",\n                \"windDirection\":
+        \"SE\",\n                \"icon\": \"https://api.weather.gov/icons/land/night/tsra_hi,60/tsra_hi,30?size=medium\",\n
+        \               \"shortForecast\": \"Showers And Thunderstorms Likely then
+        Slight Chance Showers And Thunderstorms\",\n                \"detailedForecast\":
+        \"Showers and thunderstorms likely before 8pm, then a slight chance of showers
+        and thunderstorms between 8pm and 2am. Partly cloudy, with a low around 78.
+        Southeast wind around 7 mph. Chance of precipitation is 60%.\"\n            },\n
+        \           {\n                \"number\": 9,\n                \"name\": \"Friday\",\n
+        \               \"startTime\": \"2023-08-04T06:00:00-04:00\",\n                \"endTime\":
+        \"2023-08-04T18:00:00-04:00\",\n                \"isDaytime\": true,\n                \"temperature\":
+        91,\n                \"temperatureUnit\": \"F\",\n                \"temperatureTrend\":
+        null,\n                \"probabilityOfPrecipitation\": {\n                    \"unitCode\":
+        \"wmoUnit:percent\",\n                    \"value\": 60\n                },\n
+        \               \"dewpoint\": {\n                    \"unitCode\": \"wmoUnit:degC\",\n
+        \                   \"value\": 24.444444444444443\n                },\n                \"relativeHumidity\":
+        {\n                    \"unitCode\": \"wmoUnit:percent\",\n                    \"value\":
+        86\n                },\n                \"windSpeed\": \"5 to 9 mph\",\n                \"windDirection\":
+        \"S\",\n                \"icon\": \"https://api.weather.gov/icons/land/day/tsra_hi,40/tsra_hi,60?size=medium\",\n
+        \               \"shortForecast\": \"Chance Showers And Thunderstorms\",\n
+        \               \"detailedForecast\": \"A chance of showers and thunderstorms
+        between 8am and 2pm, then showers and thunderstorms likely. Mostly sunny,
+        with a high near 91. South wind 5 to 9 mph. Chance of precipitation is 60%.\"\n
+        \           },\n            {\n                \"number\": 10,\n                \"name\":
+        \"Friday Night\",\n                \"startTime\": \"2023-08-04T18:00:00-04:00\",\n
+        \               \"endTime\": \"2023-08-05T06:00:00-04:00\",\n                \"isDaytime\":
+        false,\n                \"temperature\": 79,\n                \"temperatureUnit\":
+        \"F\",\n                \"temperatureTrend\": null,\n                \"probabilityOfPrecipitation\":
+        {\n                    \"unitCode\": \"wmoUnit:percent\",\n                    \"value\":
+        60\n                },\n                \"dewpoint\": {\n                    \"unitCode\":
+        \"wmoUnit:degC\",\n                    \"value\": 23.888888888888889\n                },\n
+        \               \"relativeHumidity\": {\n                    \"unitCode\":
+        \"wmoUnit:percent\",\n                    \"value\": 85\n                },\n
+        \               \"windSpeed\": \"5 to 10 mph\",\n                \"windDirection\":
+        \"S\",\n                \"icon\": \"https://api.weather.gov/icons/land/night/tsra_hi,60/tsra_hi,20?size=medium\",\n
+        \               \"shortForecast\": \"Showers And Thunderstorms Likely then
+        Slight Chance Showers And Thunderstorms\",\n                \"detailedForecast\":
+        \"Showers and thunderstorms likely before 8pm, then a slight chance of showers
+        and thunderstorms between 8pm and 2am. Partly cloudy, with a low around 79.
+        Chance of precipitation is 60%.\"\n            },\n            {\n                \"number\":
+        11,\n                \"name\": \"Saturday\",\n                \"startTime\":
+        \"2023-08-05T06:00:00-04:00\",\n                \"endTime\": \"2023-08-05T18:00:00-04:00\",\n
+        \               \"isDaytime\": true,\n                \"temperature\": 93,\n
+        \               \"temperatureUnit\": \"F\",\n                \"temperatureTrend\":
+        null,\n                \"probabilityOfPrecipitation\": {\n                    \"unitCode\":
+        \"wmoUnit:percent\",\n                    \"value\": 60\n                },\n
+        \               \"dewpoint\": {\n                    \"unitCode\": \"wmoUnit:degC\",\n
+        \                   \"value\": 25\n                },\n                \"relativeHumidity\":
+        {\n                    \"unitCode\": \"wmoUnit:percent\",\n                    \"value\":
+        88\n                },\n                \"windSpeed\": \"5 to 10 mph\",\n
+        \               \"windDirection\": \"S\",\n                \"icon\": \"https://api.weather.gov/icons/land/day/tsra_hi,50/tsra_hi,60?size=medium\",\n
+        \               \"shortForecast\": \"Chance Showers And Thunderstorms\",\n
+        \               \"detailedForecast\": \"A chance of showers and thunderstorms
+        between 8am and 2pm, then showers and thunderstorms likely. Mostly sunny,
+        with a high near 93. Chance of precipitation is 60%.\"\n            },\n            {\n
+        \               \"number\": 12,\n                \"name\": \"Saturday Night\",\n
+        \               \"startTime\": \"2023-08-05T18:00:00-04:00\",\n                \"endTime\":
+        \"2023-08-06T06:00:00-04:00\",\n                \"isDaytime\": false,\n                \"temperature\":
+        79,\n                \"temperatureUnit\": \"F\",\n                \"temperatureTrend\":
+        null,\n                \"probabilityOfPrecipitation\": {\n                    \"unitCode\":
+        \"wmoUnit:percent\",\n                    \"value\": 60\n                },\n
+        \               \"dewpoint\": {\n                    \"unitCode\": \"wmoUnit:degC\",\n
+        \                   \"value\": 24.444444444444443\n                },\n                \"relativeHumidity\":
+        {\n                    \"unitCode\": \"wmoUnit:percent\",\n                    \"value\":
+        87\n                },\n                \"windSpeed\": \"6 to 9 mph\",\n                \"windDirection\":
+        \"SE\",\n                \"icon\": \"https://api.weather.gov/icons/land/night/tsra_hi,60/tsra_hi,20?size=medium\",\n
+        \               \"shortForecast\": \"Showers And Thunderstorms Likely then
+        Slight Chance Showers And Thunderstorms\",\n                \"detailedForecast\":
+        \"Showers and thunderstorms likely before 8pm, then a slight chance of showers
+        and thunderstorms. Partly cloudy, with a low around 79. Chance of precipitation
+        is 60%.\"\n            },\n            {\n                \"number\": 13,\n
+        \               \"name\": \"Sunday\",\n                \"startTime\": \"2023-08-06T06:00:00-04:00\",\n
+        \               \"endTime\": \"2023-08-06T18:00:00-04:00\",\n                \"isDaytime\":
+        true,\n                \"temperature\": 93,\n                \"temperatureUnit\":
+        \"F\",\n                \"temperatureTrend\": null,\n                \"probabilityOfPrecipitation\":
+        {\n                    \"unitCode\": \"wmoUnit:percent\",\n                    \"value\":
+        70\n                },\n                \"dewpoint\": {\n                    \"unitCode\":
+        \"wmoUnit:degC\",\n                    \"value\": 25.555555555555557\n                },\n
+        \               \"relativeHumidity\": {\n                    \"unitCode\":
+        \"wmoUnit:percent\",\n                    \"value\": 89\n                },\n
+        \               \"windSpeed\": \"6 to 12 mph\",\n                \"windDirection\":
+        \"SE\",\n                \"icon\": \"https://api.weather.gov/icons/land/day/tsra_hi,50/tsra_hi,70?size=medium\",\n
+        \               \"shortForecast\": \"Chance Showers And Thunderstorms\",\n
+        \               \"detailedForecast\": \"A chance of showers and thunderstorms
+        before 2pm, then showers and thunderstorms likely. Mostly sunny, with a high
+        near 93. Chance of precipitation is 70%.\"\n            },\n            {\n
+        \               \"number\": 14,\n                \"name\": \"Sunday Night\",\n
+        \               \"startTime\": \"2023-08-06T18:00:00-04:00\",\n                \"endTime\":
+        \"2023-08-07T06:00:00-04:00\",\n                \"isDaytime\": false,\n                \"temperature\":
+        80,\n                \"temperatureUnit\": \"F\",\n                \"temperatureTrend\":
+        null,\n                \"probabilityOfPrecipitation\": {\n                    \"unitCode\":
+        \"wmoUnit:percent\",\n                    \"value\": 70\n                },\n
+        \               \"dewpoint\": {\n                    \"unitCode\": \"wmoUnit:degC\",\n
+        \                   \"value\": 25\n                },\n                \"relativeHumidity\":
+        {\n                    \"unitCode\": \"wmoUnit:percent\",\n                    \"value\":
+        88\n                },\n                \"windSpeed\": \"7 to 10 mph\",\n
+        \               \"windDirection\": \"SE\",\n                \"icon\": \"https://api.weather.gov/icons/land/night/tsra_hi,70/tsra_hi,30?size=medium\",\n
+        \               \"shortForecast\": \"Showers And Thunderstorms Likely then
+        Chance Showers And Thunderstorms\",\n                \"detailedForecast\":
+        \"Showers and thunderstorms likely before 8pm, then a chance of showers and
+        thunderstorms between 8pm and 2am. Partly cloudy, with a low around 80. Chance
+        of precipitation is 70%.\"\n            }\n        ]\n    }\n}"
+    headers:
+      Access-Control-Allow-Origin:
+      - '*'
+      Access-Control-Expose-Headers:
+      - X-Correlation-Id, X-Request-Id, X-Server-Id
+      Cache-Control:
+      - public, max-age=2787, s-maxage=3600
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '1808'
+      Content-Type:
+      - application/geo+json
+      Date:
+      - Mon, 31 Jul 2023 12:56:57 GMT
+      Expires:
+      - Mon, 31 Jul 2023 13:43:24 GMT
+      Server:
+      - nginx/1.20.1
+      Strict-Transport-Security:
+      - max-age=31536000 ; includeSubDomains ; preload
+      Vary:
+      - Accept-Encoding
+      - Accept,Feature-Flags,Accept-Language
+      X-Correlation-ID:
+      - 2663594c
+      X-Edge-Request-ID:
+      - 259adfe7
+      X-Request-ID:
+      - 8d617769-4b99-4d1a-bcae-0c1ea9727568
+      X-Server-ID:
+      - vm-bldr-nids-apiapp10.ncep.noaa.gov
+    status:
+      code: 200
+      message: OK
+    url: https://api.weather.gov/gridpoints/MFL/107,58/forecast
+version: 1
