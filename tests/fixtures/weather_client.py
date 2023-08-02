@@ -1,9 +1,7 @@
 from collections.abc import Iterable
 
-import hypothesis.strategies as st
 import pook
 import pytest
-from hypothesis import given
 
 from otto.lib.weather_client import WeatherClient
 
@@ -55,24 +53,7 @@ def mock_weather_client() -> Iterable[WeatherClient]:
 @pytest.fixture(scope="session")
 def mock_weather_client_with_500() -> Iterable[WeatherClient]:
     """Define the weather client to be used for the test."""
-    headers = {"Content-Type": "application/json"}
-    forecast_data = {}
-    weather_data = {}
-
     with pook.use(network=True):
-        pook.get(
-            pook.regex("https://api.weather.gov/points/.*"),
-            reply=500,
-            response_type="json",
-            response_headers=headers,
-            response_json=forecast_data,
-        )
-        pook.get(
-            pook.regex("https://api.weather.gov/gridpoints/.*"),
-            reply=500,
-            response_type="json",
-            response_headers=headers,
-            response_json=weather_data,
-        )
-
+        pook.get(pook.regex("https://api.weather.gov/points/.*"), reply=500)
+        pook.get(pook.regex("https://api.weather.gov/gridpoints/.*"), reply=500)
         yield WeatherClient()

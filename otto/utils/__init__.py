@@ -30,11 +30,11 @@ def get_date(d: datetime) -> str:
     return datetime.strftime(d, "%m/%d")
 
 
-def download_image(image_url: str) -> str:
+def download_image(image_url: str) -> Path:
     """Download an image from a URL and return the file path."""
     if url_path := urllib.parse.urlparse(image_url).path:
         file_ext = Path(url_path).suffix
-        file_name = tempfile.mkstemp(file_ext)[1]
+        file_name = Path(tempfile.mkstemp(file_ext)[1])
         response = requests.get(image_url, stream=True, timeout=DEFAULT_TIMEOUT)
         if response.status_code == HTTP_SUCCESS:
             with Path(file_name).open("wb") as file:
@@ -53,7 +53,7 @@ def get_url_age(url: str) -> datetime:
     return convert_httpstring(lm)
 
 
-async def delete_file(file_path: str) -> None:
+async def delete_file(file_path: Path | str) -> None:
     """Delete a file from the file system."""
     Path(file_path).unlink(missing_ok=True)
 

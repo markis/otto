@@ -30,8 +30,8 @@ def mock_submission() -> Mock:
         (100, "Tweet about something else", "not browns related", False),
         (75, "Tweet about something browns related", "browns related", True),
         (75, "Tweet about something else", "not browns related", False),
-        (0, "Tweet about something browns related", "browns related", True),
-        (0, "Tweet about something else", "not browns related", True),
+        (0, "Tweet about somethinz browns related", "browns related", True),
+        (0, "Tweet about somethinz else", "not browns related", True),
     ],
 )
 async def test_check_post(

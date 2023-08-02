@@ -41,7 +41,7 @@ async def update_sidebar_image(reddit: Reddit, image_url: str, sr_name: str, ctx
     await delete_file(resize_image_path)
 
 
-async def update_new_reddit_sidebar_image(sr: Subreddit, image_path: str, width: int, height: int) -> None:
+async def update_new_reddit_sidebar_image(sr: Subreddit, image_path: Path, width: int, height: int) -> None:
     """Update the sidebar image on new Reddit."""
     widgets: SubredditWidgets = await sr.widgets
     image_url = widgets.mod.upload_image(image_path)
@@ -87,7 +87,7 @@ def _update_size_token(rule: tinycss2.ast.QualifiedRule, identity: str, represen
             return
 
 
-async def update_old_reddit_sidebar_image(sr: Subreddit, image_path: str, width: int, height: int) -> None:
+async def update_old_reddit_sidebar_image(sr: Subreddit, image_path: Path, width: int, height: int) -> None:
     """Update the sidebar image on old Reddit."""
     sr_stylesheet = sr.stylesheet
     styles = sr_stylesheet.__call__()
