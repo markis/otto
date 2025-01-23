@@ -6,7 +6,7 @@ from playwright.async_api import async_playwright
 
 from otto import TWITTER_AUTH_COOKIE
 
-twitter_status_url_re = re.compile(r".*https?:\/\/(mobile.)?twitter\.com\/(?:#!\/)?(\w+)\/status(es)?\/(\d+).*")
+twitter_status_url_re = re.compile(r".*https?:\/\/(mobile.)?(twitter|x)\.com\/(?:#!\/)?(\w+)\/status(es)?\/(\d+).*")
 truncated_tweet_re = re.compile(r"(.*?)(\…?\s*)https:\/\/t.co\/.*?$")
 
 COOKIES: list[Any] = [
@@ -14,6 +14,14 @@ COOKIES: list[Any] = [
         "name": "auth_token",
         "value": TWITTER_AUTH_COOKIE,
         "domain": ".twitter.com",
+        "path": "/",
+        "httpOnly": True,
+        "secure": True,
+    },
+    {
+        "name": "auth_token",
+        "value": TWITTER_AUTH_COOKIE,
+        "domain": ".x.com",
         "path": "/",
         "httpOnly": True,
         "secure": True,
@@ -30,7 +38,7 @@ def text_contains_twitter_status_url(text: str) -> tuple[bool, int | None, str |
 
 
 def get_tweet_url(status_id: int, author: str = "anyuser") -> str:
-    return f"https://twitter.com/{author}/status/{status_id}"
+    return f"https://x.com/{author}/status/{status_id}"
 
 
 def clean_tweet(tweet: str) -> str:
@@ -43,7 +51,7 @@ async def get_tweet_text(status_id: int, author: str = "anyuser") -> str:
         context = await browser.new_context()
         await context.add_cookies(COOKIES)
         page = await context.new_page()
-        await page.goto(f"https://twitter.com/{author}/status/{status_id}")
+        await page.goto(f"https://x.com/{author}/status/{status_id}")
         await page.wait_for_selector("article")
         element = page.get_by_test_id("tweetText")
         assert element, "Tweet text element not found, div['data-testid=\"tweetText\"']"
