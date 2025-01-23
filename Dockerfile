@@ -1,4 +1,4 @@
-FROM python:3 as base
+FROM python:3.12 AS base
 
 ENV PIP_DISABLE_PIP_VERSION_CHECK=1 \
     PIP_DISABLE_ROOT_WARNING=1 \
@@ -13,7 +13,7 @@ RUN --mount=type=cache,target=/var/cache \
     pip install --upgrade build==0.10.0 && \
     python -m build
 
-FROM python:3-slim as otto
+FROM python:3.12-slim AS otto
 
 #ENTRYPOINT [ "python3" ]
 #CMD [ "-m", "otto.app" ]
