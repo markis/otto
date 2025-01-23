@@ -51,7 +51,8 @@ async def get_tweet_text(status_id: int, author: str = "anyuser") -> str:
         context = await browser.new_context()
         await context.add_cookies(COOKIES)
         page = await context.new_page()
-        await page.goto(f"https://x.com/{author}/status/{status_id}")
+        tweet_url = get_tweet_url(status_id, author)
+        await page.goto(tweet_url)
         await page.wait_for_selector("article")
         element = page.get_by_test_id("tweetText")
         assert element, "Tweet text element not found, div['data-testid=\"tweetText\"']"

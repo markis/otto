@@ -5,18 +5,16 @@ build-backend = "hatchling.build"
 [project]
 name = "otto"
 version = "1.0.0"
-authors = [
-  {name = "Markis Taylor", email = "m@rkis.net"}
-]
+authors = [{ name = "Markis Taylor", email = "m@rkis.net" }]
 description = "OttoGrahaminator"
-requires-python = ">=3.11,<4"
+requires-python = ">=3.11,<3.13"
 dependencies = [
-  "asyncpraw==7.7.0",
+  "asyncpraw==7.8.1",
   "fuzzywuzzy[speedup]==0.18.0",
-  "playwright==1.35.0",
-  "py-cord==2.4.1",
-  "pytz==2023.3",
-  "PyYAML==6.0",
+  "playwright==1.49.1",
+  "py-cord==2.6.1",
+  "pytz==2024.2",
+  "PyYAML==6.0.2",
   "pytimeparse==1.1.8",
   "tinycss2==1.2.1",
   "wand==0.6.11",
@@ -34,13 +32,10 @@ dependencies = [
   "types-pytz==2023.3.0.0",
   "types-PyYAML==6.0.12.10",
   "types-requests==2.31.0.1",
-  "hatch-mypyc==0.16.0"
+  "hatch-mypyc==0.16.0",
 ]
 exclude = ["otto/discord.py"]
-mypy-args = [
-  "--strict",
-  "--ignore-missing-imports",
-]
+mypy-args = ["--strict", "--ignore-missing-imports"]
 
 [project.optional-dependencies]
 dev = [
@@ -71,12 +66,9 @@ disallow_untyped_decorators = false
 
 [[tool.mypy.overrides]]
 disable_error_code = "no-untyped-call"
-module = [
-  'otto.discord',
-]
+module = ['otto.discord']
 
 [tool.ruff]
 target-version = "py311"
 line-length = 120
-select = [ "E", "F", "W", "Q", "UP", "I", "N" ]
-
+select = ["E", "F", "W", "Q", "UP", "I", "N"]

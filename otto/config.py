@@ -32,29 +32,29 @@ class Config:
 
 
 def _convert_to_bool(val: str | int | bool | None) -> bool:
-    return val in (1, True) or (type(val) == str and val.lower() in ("true", "yes", "1"))
+    return val in (1, True) or (type(val) is str and val.lower() in ("true", "yes", "1"))
 
 
 def _convert_to_int(val: str | int | bool | None) -> int:
-    if type(val) == int:
+    if type(val) is int:
         return val
-    elif type(val) == str:
+    elif type(val) is str:
         return int(val)
-    elif type(val) == bool and val is True:
+    elif type(val) is bool and val is True:
         return 1
     return 0
 
 
 def _convert_to_timedelta(val: str | int | bool | None) -> timedelta:
-    if type(val) == int:
+    if type(val) is int:
         return timedelta(seconds=val)
-    elif type(val) == str:
+    elif type(val) is str:
         from pytimeparse.timeparse import timeparse
 
         val_time = timeparse(val)
         assert val_time
         return timedelta(seconds=val_time)
-    elif type(val) == bool and val is True:
+    elif type(val) is bool and val is True:
         return timedelta(seconds=1)
     return timedelta(seconds=0)
 
